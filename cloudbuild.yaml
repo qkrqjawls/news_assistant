@@ -1,0 +1,9 @@
+# cloudbuild.yaml
+steps:
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      echo "Uploading to GCS..."
+      gsutil -m cp -r * gs://news_assistant_main/
