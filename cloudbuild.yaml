@@ -7,3 +7,5 @@ steps:
     - |
       echo "Uploading to GCS..."
       gsutil -m cp -r * gs://news_assistant_main/
+options:
+  logging: CLOUD_LOGGING_ONLY
