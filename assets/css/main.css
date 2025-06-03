@@ -3490,3 +3490,62 @@ input, select, textarea {
 			}
 
 		}
+/* ─────────────────────────────────────────
+   로그인 폼(form#loginForm) 전체 너비/여백 설정
+───────────────────────────────────────── */
+.login-form-wrapper {
+  max-width: 600px;        /* 폼 가로 너비 제한 (원하는 크기로 조정) */
+  margin: 0 auto 2em auto; /* 상단 0, 좌우 자동 중앙 정렬, 하단 2em 여백 */
+  padding: 1.5em;          /* 폼 내부 전체 패딩 */
+  background: #fff;        /* 원하면 배경 색상 지정 */
+  border: solid 1px #ddd;  /* 폼 테두리 */
+}
+
+/* ─────────────────────────────────────────
+   각 입력 칸(레이블+인풋) 사이 여백 조정
+───────────────────────────────────────── */
+.login-form-wrapper .form-field {
+  margin-bottom: 1.5em; /* 아래쪽 여백: 1.5em → 원하시는 값으로 조정 */
+}
+
+/* ─────────────────────────────────────────
+   레이블과 입력칸 사이 간격 줄이거나 늘이기
+───────────────────────────────────────── */
+.login-form-wrapper .form-field label {
+  display: block;         /* 레이블을 블록 요소로 처리 */
+  margin-bottom: 0.5em;   /* 레이블 아래쪽 여백: 0.5em → 필요 시 값 변경 */
+  font-weight: bold;
+}
+
+/* ─────────────────────────────────────────
+   입력박스(input) 스타일 (너비·패딩 포함)
+───────────────────────────────────────── */
+.login-form-wrapper .form-field input {
+  width: 100%;            /* 부모 너비에 맞춤 */
+  padding: 0.6em;         /* 인풋 내부 여백: 0.6em → 조정 가능 */
+  border: solid 1px #ccc;
+  box-sizing: border-box; /* 패딩 포함 너비 계산 */
+}
+
+/* ─────────────────────────────────────────
+   버튼과 위 입력칸(비밀번호) 사이 간격
+───────────────────────────────────────── */
+.login-form-wrapper .form-field button {
+  display: flex;                /* 플렉스 컨테이너로 만들기 */
+  align-items: center;          /* 세로 중앙 정렬 */
+  justify-content: center;      /* 가로 중앙 정렬 */
+  width: 100%;
+  height: 3em;                  /* 버튼 높이를 고정(원하는 크기로 설정) */
+  background: #707070;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+/* ─────────────────────────────────────────
+   버튼 위쪽 간격만 따로 더 주고 싶으면
+───────────────────────────────────────── */
+.login-form-wrapper .form-field:last-child {
+  margin-top: 2em; /* 버튼 블록의 위쪽 여백: 2em → 조정 가능 */
+}
