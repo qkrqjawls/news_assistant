@@ -3549,3 +3549,36 @@ input, select, textarea {
 .login-form-wrapper .form-field:last-child {
   margin-top: 2em; /* 버튼 블록의 위쪽 여백: 2em → 조정 가능 */
 }
+
+/* ──────────────────────────────────────────────
+   모바일(가로폭 480px 이하)에서 #main 영역을 최대한 넓게 보이도록 재정의
+────────────────────────────────────────────── */
+@media screen and (max-width: 480px) {
+
+  /* 1) #wrapper 좌우 패딩 최소화 */
+  #wrapper {
+    padding-left: 0.5em !important;   /* 최소한의 여백만 남김 */
+    padding-right: 0.5em !important;
+  }
+
+  /* 2) #main 영역을 100% 너비로 펼치기 */
+  #main {
+    width: 100% !important;           /* 부모 너비를 가득 채움 */
+    padding: 0 !important;            /* 불필요한 내부 여백 제거 */
+    margin: 0 !important;             /* 상하 여백도 필요하다면 조절 */
+  }
+
+  /* 3) .login-form-wrapper 너비도 100%로 재정의 */
+  .login-form-wrapper {
+    max-width: 100% !important;       /* 부모(#main) 너비 전체를 사용 */
+    margin-left: 0 !important;        /* 중앙 정렬 대신 화면 가득 채움 */
+    margin-right: 0 !important;
+    padding: 1em !important;          /* 내부 여백을 살짝만 남김 */
+  }
+
+  /* 4) (선택 사항) 모바일에서 사이드바 숨기기 */
+  /* 로그인 전용 페이지라면 사이드바가 필요 없을 경우 다음을 추가하세요 */
+  #sidebar {
+    display: none !important;
+  }
+}
