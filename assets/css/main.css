@@ -2558,8 +2558,8 @@ input, select, textarea {
 
 		ul.posts li {
 			border-top: dotted 1px rgba(160, 160, 160, 0.3);
-			margin: 2em 0 0 0;
-			padding: 2em 0 0 0;
+			margin: 0.5em 0 0 0;
+			padding: 0.5em 0 0 0;
 		}
 
 			ul.posts li:first-child {
@@ -2586,13 +2586,18 @@ input, select, textarea {
 			ul.posts article .image {
 				display: block;
 				margin-right: 1.5em;
-				min-width: 4em;
-				width: 4em;
+
+				width:      6em;
+				height:     4.5em;
+				min-width:  6em;
+				min-height: 4.5em;
 			}
 
-				ul.posts article .image img {
-					width: 100%;
-				}
+			ul.posts article .image img {
+				width:       100%;      /* 컨테이너 가로 100% */
+				height:      100%;      /* 컨테이너 세로 100% */
+				object-fit:  cover;
+			}
 
 			ul.posts article header {
 				-moz-flex-grow: 1;
@@ -2603,7 +2608,7 @@ input, select, textarea {
 			}
 
 				ul.posts article header h3 {
-					font-size: 1.2em;
+					font-size: 0.8em;
 					margin-top: 0.125em;
 				}
 
@@ -3294,14 +3299,18 @@ input, select, textarea {
 
 			#sidebar {
 				border-top: solid 1px rgba(160, 160, 160, 0.3);
-				margin: -2em 0 0 0;
+
+				/* 음수 마진을 0으로 수정 → 사이드바가 위로 밀리지 않도록 함 */
+				margin: 0 0 0 0;
+
 				min-width: 0;
-				padding: 3em 0 0 0;
+				padding: 1em 0 0 0;
 				width: 100%;
 				overflow-x: hidden;
 			}
 
 		}
+
 
 /* Intro */
 
@@ -3350,8 +3359,8 @@ input, select, textarea {
 	@media screen and (max-width: 736px) {
 
 		#intro {
-			margin: 0 0 1.5em 0;
-			padding: 1.25em 0;
+			margin: 0 0 0em 0;
+			padding: 0.5em 0;
 		}
 
 			#intro > :last-child {
@@ -3490,94 +3499,105 @@ input, select, textarea {
 			}
 
 		}
+
 /* ─────────────────────────────────────────
-   로그인 폼(form#loginForm) 전체 너비/여백 설정
+   공통: 로그인/회원가입 폼(form#*) 전체 너비/여백 설정
 ───────────────────────────────────────── */
-.login-form-wrapper {
-  max-width: 600px;        /* 폼 가로 너비 제한 (원하는 크기로 조정) */
-  margin: 0 auto 2em auto; /* 상단 0, 좌우 자동 중앙 정렬, 하단 2em 여백 */
-  padding: 1.5em;          /* 폼 내부 전체 패딩 */
-  background: #fff;        /* 원하면 배경 색상 지정 */
-  border: solid 1px #ddd;  /* 폼 테두리 */
+
+/* 1) “.form-wrapper” 로 통일 */
+.form-wrapper {
+  max-width: 600px;          /* 폼 가로 너비 제한 */
+  margin: 0 auto 2em auto;   /* 상단 0, 좌우 자동 중앙 정렬, 하단 2em 여백 */
+  padding: 1.5em;            /* 폼 내부 전체 패딩 */
+  background: #fff;          /* 흰색 배경 */
+  border: solid 1px #ddd;    /* 연한 회색 테두리 */
+  box-sizing: border-box;    /* padding 포함 너비 계산 */
 }
 
 /* ─────────────────────────────────────────
-   각 입력 칸(레이블+인풋) 사이 여백 조정
+   공통: 각 입력 칸(레이블+인풋) 사이 여백 조정
 ───────────────────────────────────────── */
-.login-form-wrapper .form-field {
-  margin-bottom: 1.5em; /* 아래쪽 여백: 1.5em → 원하시는 값으로 조정 */
+.form-wrapper .form-field {
+  margin-bottom: 1.5em;      /* 아래쪽 여백 */
 }
 
 /* ─────────────────────────────────────────
-   레이블과 입력칸 사이 간격 줄이거나 늘이기
+   공통: 레이블과 입력칸 사이 간격
 ───────────────────────────────────────── */
-.login-form-wrapper .form-field label {
-  display: block;         /* 레이블을 블록 요소로 처리 */
-  margin-bottom: 0.5em;   /* 레이블 아래쪽 여백: 0.5em → 필요 시 값 변경 */
+.form-wrapper .form-field label {
+  display: block;            /* 레이블을 블록 요소로 처리 */
+  margin-bottom: 0.5em;      /* 레이블 아래 여백 */
   font-weight: bold;
+  color: #333;
 }
 
 /* ─────────────────────────────────────────
-   입력박스(input) 스타일 (너비·패딩 포함)
+   공통: 입력박스(input) 스타일
 ───────────────────────────────────────── */
-.login-form-wrapper .form-field input {
-  width: 100%;            /* 부모 너비에 맞춤 */
-  padding: 0.6em;         /* 인풋 내부 여백: 0.6em → 조정 가능 */
+.form-wrapper .form-field input {
+  width: 100%;               /* 부모 너비에 맞춤 */
+  padding: 0.6em;            /* 인풋 내부 여백 */
   border: solid 1px #ccc;
-  box-sizing: border-box; /* 패딩 포함 너비 계산 */
-}
-
-/* ─────────────────────────────────────────
-   버튼과 위 입력칸(비밀번호) 사이 간격
-───────────────────────────────────────── */
-.login-form-wrapper .form-field button {
-  display: flex;                /* 플렉스 컨테이너로 만들기 */
-  align-items: center;          /* 세로 중앙 정렬 */
-  justify-content: center;      /* 가로 중앙 정렬 */
-  width: 100%;
-  height: 3em;                  /* 버튼 높이를 고정(원하는 크기로 설정) */
-  background: #707070;
-  color: #fff;
-  border: none;
-  cursor: pointer;
+  box-sizing: border-box;    /* padding 포함 너비 계산 */
   font-size: 1em;
 }
 
 /* ─────────────────────────────────────────
-   버튼 위쪽 간격만 따로 더 주고 싶으면
+   공통: 버튼 스타일
 ───────────────────────────────────────── */
-.login-form-wrapper .form-field:last-child {
-  margin-top: 2em; /* 버튼 블록의 위쪽 여백: 2em → 조정 가능 */
+.form-wrapper .form-field button {
+  display: flex;             /* 가로·세로 중앙 정렬을 위해 flex */
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 3em;               /* 버튼 높이 */
+  background: #707070;       /* 기본 배경색 (로그인 버튼 색과 동일) */
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
-/* ──────────────────────────────────────────────
-   모바일(가로폭 480px 이하)에서 #main 영역을 최대한 넓게 보이도록 재정의
-────────────────────────────────────────────── */
+/* ─────────────────────────────────────────
+   공통: 버튼 위쪽 간격만 따로 더 주고 싶으면
+───────────────────────────────────────── */
+.form-wrapper .form-field:last-child {
+  margin-top: 2em;           /* 버튼 블록 위쪽 여백 */
+}
+
+/* ────────────────────────────────────────
+   모바일(가로폭 480px 이하)에서 #main 영역 최대한 넓게 재정의
+───────────────────────────────────────── */
 @media screen and (max-width: 480px) {
 
   /* 1) #wrapper 좌우 패딩 최소화 */
   #wrapper {
-    padding-left: 0.5em !important;   /* 최소한의 여백만 남김 */
-    padding-right: 0.5em !important;
+    padding-left: 1em !important;
+    padding-right: 1em !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    display: block !important;
   }
 
-  /* 2) #main 영역을 100% 너비로 펼치기 */
+  /* 2) #main 영역 100% 너비로 */
   #main {
-    width: 100% !important;           /* 부모 너비를 가득 채움 */
-    padding: 0 !important;            /* 불필요한 내부 여백 제거 */
-    margin: 0 !important;             /* 상하 여백도 필요하다면 조절 */
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
-  /* 3) .login-form-wrapper 너비도 100%로 재정의 */
-  .login-form-wrapper {
-    max-width: 100% !important;       /* 부모(#main) 너비 전체를 사용 */
-    margin-left: 0 !important;        /* 중앙 정렬 대신 화면 가득 채움 */
+  /* 3) 폼 컨테이너(.form-wrapper)도 100% 너비로 */
+  .form-wrapper {
+    max-width: 100% !important;
+    margin-left: 0 !important;
     margin-right: 0 !important;
-    padding: 1em !important;          /* 내부 여백을 살짝만 남김 */
+    padding: 1em !important;
   }
 
-  /* 4) (선택 사항) 모바일에서 사이드바 숨기기 */
-  /* 로그인 전용 페이지라면 사이드바가 필요 없을 경우 다음을 추가하세요 */
+  /* 4) 사이드바 숨김 (로그인/회원가입 전용 페이지라면 필요 없음) */
   #sidebar {
     display: none !important;
   }
