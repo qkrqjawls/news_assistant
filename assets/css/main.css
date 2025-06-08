@@ -3598,7 +3598,4 @@ input, select, textarea {
   }
 
   /* 4) 사이드바 숨김 (로그인/회원가입 전용 페이지라면 필요 없음) */
-  #sidebar {
-    display: none !important;
-  }
 }
