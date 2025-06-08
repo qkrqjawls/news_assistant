@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>Future Imperfect – Sign Up</title>
+    <title>Future Imperfect – Category Prompt</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="assets/css/main.css" />
@@ -14,32 +14,20 @@
       <!-- Header -->
       <header id="header">
         <h1><a href="index.html">Future Imperfect</a></h1>
-        <nav class="main">
-          <ul>
-            <li class="search">
-              <a class="fa-search" href="#search">Search</a>
-              <form id="search" method="get" action="#">
-                <input type="text" name="query" placeholder="Search" />
-              </form>
-            </li>
-            <li class="menu">
-              <a class="fa-bars" href="#menu">Menu</a>
-            </li>
-          </ul>
-        </nav>
+        <nav><a href="#menu">Menu</a></nav>
       </header>
 
       <!-- Menu -->
       <section id="menu">
         <section>
           <form class="search" method="get" action="#">
-            <input type="text" name="query" placeholder="Search" />
+            <input type="text" name="query" id="query" placeholder="Search" />
           </form>
         </section>
         <section>
           <ul class="links">
-            <li><a href="login.html"><h3>Log In</h3><p>로그인 하러 가기</p></a></li>
-            <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입하기</p></a></li>
+            <li><a href="login.html"><h3>Log In</h3><p>로그인</p></a></li>
+            <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입</p></a></li>
           </ul>
         </section>
       </section>
@@ -47,23 +35,69 @@
       <!-- Main -->
       <div id="main">
         <section class="form-wrapper signup-form-wrapper">
-          <form id="signupForm" method="post" action="/signup">
+          <form id="promptForm" method="post" action="/submit-prompt">
+
+            <!-- 카테고리 체크박스 2열 그리드 -->
             <div class="form-field">
-              <label for="prompt">Prompt</label>
-              <textarea
-                id="prompt"
-                name="prompt"
-                placeholder="Enter your prompt…"
-                rows="4"
-              ></textarea>
+              <label>카테고리 수정</label>
+              <div class="checkbox-group">
+                <div class="checkbox-item">
+                  <input type="checkbox" id="cat-politics"      name="category" value="politics">
+                  <label for="cat-politics">정치</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="cat-business"      name="category" value="business">
+                  <label for="cat-business">비즈니스</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="cat-entertainment" name="category" value="entertainment">
+                  <label for="cat-entertainment">연예/오락</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="cat-environment"   name="category" value="environment">
+                  <label for="cat-environment">환경</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="cat-food"          name="category" value="food">
+                  <label for="cat-food">음식/요리</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="cat-health"        name="category" value="health">
+                  <label for="cat-health">건강</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="cat-science"       name="category" value="science">
+                  <label for="cat-science">과학</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="cat-sports"        name="category" value="sports">
+                  <label for="cat-sports">스포츠</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="cat-technology"    name="category" value="technology">
+                  <label for="cat-technology">기술</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="cat-top"           name="category" value="top">
+                  <label for="cat-top">주요 뉴스</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="cat-world"         name="category" value="world">
+                  <label for="cat-world">세계</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="cat-tourism"       name="category" value="tourism">
+                  <label for="cat-tourism">여행</label>
+                </div>
+              </div>
             </div>
+
             <div class="form-field">
-              <button type="submit">Enter</button>
+              <button type="submit">Submit</button>
             </div>
           </form>
         </section>
       </div>
-
 
     </div>
 

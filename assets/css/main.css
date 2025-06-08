@@ -3599,3 +3599,34 @@ input, select, textarea {
 
   /* 4) 사이드바 숨김 (로그인/회원가입 전용 페이지라면 필요 없음) */
 }
+
+/* assets/css/main.css 맨 아래에 덮어쓰기 */
+.checkbox-group {
+  display: grid;
+  grid-template-columns: repeat(2, auto);  /* 두 열 모두 콘텐츠 폭만큼 */
+  column-gap: 2em;
+  row-gap: 0.75em;
+  font-size: 0.9em;
+}
+
+.checkbox-item {
+  /* flex → grid 으로 전환 */
+  display: grid !important;
+  grid-template-columns: auto 1fr;  /* 체크박스 + 레이블 */
+  align-items: center;             /* 세로 중앙 정렬 */
+}
+
+.checkbox-item input[type="checkbox"] {
+  margin: 0 0.5em 0 0 !important;
+  float: none !important;
+}
+
+.checkbox-item label {
+  white-space: nowrap !important;
+  text-align: left !important;
+}
+
+
+
+
+
