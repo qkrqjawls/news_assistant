@@ -1,10 +1,10 @@
 <!DOCTYPE HTML>
 <!--
-  Future Imperfect – Sign Up
+  Future Imperfect – 내 정보 수정 (카테고리만)
 -->
 <html>
 <head>
-  <title>회원가입</title>
+  <title>내 정보 수정</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <link rel="stylesheet" href="assets/css/main.css" />
@@ -18,10 +18,8 @@
     <header id="header">
       <h1><a href="index.html">준혁이는 뉴스 보기 귀찮아!</a></h1>
       <nav class="links">
-        <ul>
-          <li><a href="login.html">로그인</a></li>
-          <li><a href="signup.html">회원가입</a></li>
-          <li><a href="index.html">홈</a></li>
+        <ul id="menuLinks">
+          <!-- 로그인 상태에 따라 JS로 동적 채움 -->
         </ul>
       </nav>
       <nav class="main">
@@ -33,40 +31,28 @@
 
     <!-- Slide-out Menu -->
     <section id="menu">
+
+      <!-- 로그인/비로그인에 따라 JS가 채워주는 링크 -->
       <section>
-        <ul class="links">
-          <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
-          <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
+        <ul class="links" id="menuLinks">
+          <!-- JS에서 채웁니다 -->
         </ul>
       </section>
+
+      <!-- Actions (Learn More 버튼) -->
       <section>
         <ul class="actions stacked">
-          <li><a href="#" class="button large fit">Learn More</a></li>
+          <li><a href="#" id="menuAction" class="button large fit">Learn More</a></li>
         </ul>
       </section>
+
     </section>
 
-    <!-- Main -->
+    <!-- Main Content -->
     <div id="main">
       <section class="form-wrapper">
-        <h2>회원가입</h2>
-        <form id="signupForm">
-          <div class="form-field">
-            <label for="username">아이디</label>
-            <input type="text" id="username" name="username" placeholder="아이디 입력" required />
-          </div>
-          <div class="form-field">
-            <label for="email">이메일</label>
-            <input type="email" id="email" name="email" placeholder="이메일 입력" required />
-          </div>
-          <div class="form-field">
-            <label for="password">비밀번호</label>
-            <input type="password" id="password" name="password" placeholder="비밀번호 입력" required />
-          </div>
-          <div class="form-field">
-            <label for="password2">비밀번호 확인</label>
-            <input type="password" id="password2" name="password2" placeholder="비밀번호 확인" required />
-          </div>
+        <h2>카테고리 수정</h2>
+        <form id="editForm">
           <div class="form-field">
             <label>내 뉴스 카테고리 선택</label>
             <div class="checkbox-group">
@@ -121,7 +107,7 @@
             </div>
           </div>
           <div class="form-field">
-            <button type="submit" class="button primary">회원가입</button>
+            <button type="submit" class="button primary">저장</button>
           </div>
         </form>
       </section>
@@ -129,49 +115,82 @@
 
   </div>
 
-  <!-- 회원가입 처리 스크립트 (추가된 부분만) -->
+  <!-- 메뉴 토글 및 폼 처리 스크립트 -->
   <script>
-    const API_SIGNUP = 'https://news-assistant-app-public-1052035590147.us-central1.run.app/register';
+    document.addEventListener('DOMContentLoaded', async () => {
+      const API_CATS   = '/api/user/categories';
+      const headerLinks= document.querySelector('nav.links ul#menuLinks');
+      const slideLinks = document.querySelector('#menu .links#menuLinks');
+      const actionBtn  = document.getElementById('menuAction');
 
-    document.getElementById('signupForm').addEventListener('submit', async e => {
-      e.preventDefault();
-
-      const username   = document.getElementById('username').value.trim();
-      const email      = document.getElementById('email').value.trim();
-      const password   = document.getElementById('password').value;
-      const password2  = document.getElementById('password2').value;
-      const categories = Array.from(
-        document.querySelectorAll('input[name="categories[]"]:checked')
-      ).map(cb => cb.value);
-
-      // 비밀번호 확인
-      if (password !== password2) {
-        alert('비밀번호가 일치하지 않습니다.');
+      // 1) 로그인 확인 via cookie-authenticated /profile
+      const profRes = await fetch('/profile', { credentials: 'include' });
+      if (!profRes.ok) {
+        alert('로그인이 필요합니다.');
+        window.location.href = 'login.html';
         return;
       }
+      const { username } = await profRes.json();
 
-      try {
-        const res = await fetch(API_SIGNUP, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, email, password, categories })
-        });
-        const data = await res.json();
+      // 2) 메뉴 랜더링
+      const items = `
+        <li class="greeting">안녕하세요 ${username}님</li>
+        <li><a href="editinfo.html"><h3>카테고리 수정</h3><p>내 뉴스 카테고리</p></a></li>
+        <li><a href="#" id="logoutLink"><h3>Logout</h3><p>로그아웃</p></a></li>
+      `;
+      headerLinks.innerHTML = items;
+      slideLinks.innerHTML  = items;
+      if (actionBtn) actionBtn.style.display = 'none';
 
-        if (!res.ok) {
-          alert('회원가입 실패: ' + (data.error || res.statusText));
-          return;
-        }
-
-        alert('회원가입이 완료되었습니다.');
+      document.getElementById('logoutLink').addEventListener('click', async e => {
+        e.preventDefault();
+        await fetch('/logout', { method: 'POST', credentials: 'include' });
         window.location.href = 'login.html';
+      });
+
+      // 3) 카테고리 GET
+      let categories = [];
+      try {
+        const res = await fetch(API_CATS, { credentials: 'include' });
+        if (!res.ok) throw new Error(`status ${res.status}`);
+        ({ categories } = await res.json());
       } catch (err) {
-        console.error(err);
-        alert('네트워크 오류가 발생했습니다.');
+        console.error('카테고리 로드 실패, localStorage fallback', err);
+        categories = JSON.parse(localStorage.getItem('init_categories') || '[]');
       }
+
+      // 4) 체크박스 상태 적용
+      categories.forEach(cat => {
+        const cb = document.querySelector(`input[name="categories[]"][value="${cat}"]`);
+        if (cb) cb.checked = true;
+      });
+
+      // 5) PUT 저장
+      document.getElementById('editForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        const selected = Array.from(
+          document.querySelectorAll('input[name="categories[]"]:checked')
+        ).map(cb => cb.value);
+
+        const saveRes = await fetch(API_CATS, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ categories: selected })
+        });
+
+        if (saveRes.ok) {
+          localStorage.setItem('init_categories', JSON.stringify(selected));
+          alert('카테고리가 저장되었습니다.');
+          window.location.href = 'index.html';
+        } else {
+          alert('저장에 실패했습니다.');
+        }
+      });
     });
   </script>
 
+  <!-- 필수 스크립트 -->
   <script src="assets/js/jquery.min.js"></script>
   <script src="assets/js/browser.min.js"></script>
   <script src="assets/js/breakpoints.min.js"></script>

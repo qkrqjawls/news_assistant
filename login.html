@@ -1,8 +1,8 @@
 <!DOCTYPE HTML>
 <!--
-  Future Imperfect by HTML5 UP
+  Future Imperfect – Log In
   html5up.net  | @ajlkn
-  Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+  Free for personal and commercial use under the CCA 3.0 license
 -->
 <html>
 <head>
@@ -21,17 +21,15 @@
       <h1><a href="index.html">Future Imperfect</a></h1>
       <nav class="links">
         <ul>
-          <!-- 모바일에서는 상단 네비게이션 숨겨도 무방합니다 -->
+          <li><a href="#">Lorem</a></li>
+          <li><a href="#">Ipsum</a></li>
+          <li><a href="#">Feugiat</a></li>
+          <li><a href="#">Tempus</a></li>
+          <li><a href="#">Adipiscing</a></li>
         </ul>
       </nav>
       <nav class="main">
         <ul>
-          <li class="search">
-            <a class="fa-search" href="#search">Search</a>
-            <form id="search" method="get" action="#">
-              <input type="text" name="query" placeholder="Search" />
-            </form>
-          </li>
           <li class="menu">
             <a class="fa-bars" href="#menu">Menu</a>
           </li>
@@ -39,26 +37,31 @@
       </nav>
     </header>
 
-    <!-- Menu (필요하다면 햄버거 누르면 나오는 메뉴) -->
+    <!-- Menu (로그인/회원가입 링크만) -->
     <section id="menu">
       <section>
-        <form class="search" method="get" action="#">
-          <input type="text" name="query" placeholder="Search" />
-        </form>
-      </section>
-      <section>
         <ul class="links">
-          <li><a href="login.html"><h3>Log In</h3><p>로그인 페이지</p></a></li>
-          <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 페이지</p></a></li>
+          <li>
+            <a href="login.html">
+              <h3>Log In</h3>
+              <p>로그인 하기</p>
+            </a>
+          </li>
+          <li>
+            <a href="signup.html">
+              <h3>Sign Up</h3>
+              <p>회원가입 하기</p>
+            </a>
+          </li>
         </ul>
       </section>
     </section>
 
-    <!-- Main -->
+    <!-- Main: 로그인 폼만 -->
     <div id="main">
-      <!-- ▼ 여기에 로그인 폼 (모바일 전용) ▼ -->
       <section class="form-wrapper login-form-wrapper">
-        <form id="loginForm" method="post" action="/login">
+        <h2>로그인</h2>
+        <form id="loginForm">
           <div class="form-field">
             <label for="username">ID</label>
             <input type="text" id="username" name="username" placeholder="Enter ID" required />
@@ -68,19 +71,55 @@
             <input type="password" id="password" name="password" placeholder="Enter Password" required />
           </div>
           <div class="form-field">
-            <button type="submit">Log In</button>
+            <button type="submit" class="button primary">Log In</button>
           </div>
         </form>
       </section>
-      <!-- 로그인 폼 끝 -->
     </div>
-
-    <!-- Sidebar (모바일에서 숨김 처리했으므로 실제로는 나타나지 않음) -->
-    <section id="sidebar"></section>
 
   </div>
 
-  <!-- Scripts -->
+  <!-- 로그인 처리 스크립트 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const API_LOGIN = 'https://news-assistant-app-public-1052035590147.us-central1.run.app/login';
+
+      document.getElementById('loginForm').addEventListener('submit', async e => {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+
+        try {
+          const res = await fetch(API_LOGIN, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ username, password })
+          });
+
+          // 로그인 성공 여부 확인
+          if (!res.ok) {
+            const data = await res.json();
+            alert('로그인 실패: ' + (data.error || res.statusText));
+            return;
+          }
+
+          // 사용자 ID만 로컬스토리지에 저장 (쿠키로 인증 유지)
+          localStorage.setItem('user_id', username);
+
+          // 로그인 후 인덱스 페이지로 이동
+          window.location.href = 'index.html';
+
+        } catch (err) {
+          console.error(err);
+          alert('네트워크 오류가 발생했습니다.');
+        }
+      });
+    });
+  </script>
+
+  <!-- 필수 스크립트 -->
   <script src="assets/js/jquery.min.js"></script>
   <script src="assets/js/browser.min.js"></script>
   <script src="assets/js/breakpoints.min.js"></script>
