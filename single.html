@@ -1,177 +1,93 @@
 <!DOCTYPE HTML>
-<!--
-	Future Imperfect by HTML5 UP
-	html5up.net  | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
 <html>
 <head>
-	<title>Future Imperfect by HTML5 UP</title>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-	<link rel="stylesheet" href="assets/css/main.css" />
+  <title>이슈 상세</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="assets/css/main.css" />
 </head>
 <body class="is-preload">
 
-	<!-- Wrapper -->
-	<div id="wrapper">
+  <div id="wrapper">
 
-		<!-- Header -->
-		<header id="header">
-			<h1><a href="index.html">Future Imperfect</a></h1>
-			<nav class="links">
-				<ul>
-					<li><a href="#">Lorem</a></li>
-					<li><a href="#">Ipsum</a></li>
-					<li><a href="#">Feugiat</a></li>
-					<li><a href="#">Tempus</a></li>
-					<li><a href="#">Adipiscing</a></li>
-				</ul>
-			</nav>
-			<nav class="main">
-				<ul>
-					<li class="search">
-						<a class="fa-search" href="#search">Search</a>
-						<form id="search" method="get" action="#">
-							<input type="text" name="query" placeholder="서치" />
-						</form>
-					</li>
-					<li class="menu">
-						<a class="fa-bars" href="#menu">Menu</a>
-					</li>
-				</ul>
-			</nav>
-		</header>
+    <!-- Header -->
+    <header id="header">
+      <h1><a href="index.html">준혁이는 뉴스 보기 귀찮아!</a></h1>
+      <nav class="main">
+        <ul>
+          <li class="menu"><a class="fa-bars" href="#menu">Menu</a></li>
+        </ul>
+      </nav>
+    </header>
 
-		<!-- Menu -->
-		<section id="menu">
-			<!-- Search -->
-			<section>
-				<form class="search" method="get" action="#">
-					<input type="text" name="query" placeholder="Search" />
-				</form>
-			</section>
+    <!-- Main -->
+    <div id="main">
+      <article class="post">
+        <header>
+          <div class="title">
+            <h2><span id="post-title">로딩 중…</span></h2>
+          </div>
+          <div class="meta">
+            <time class="published" datetime="" id="post-date">Loading date…</time>
+            <a href="#" class="author">
+              <span class="name">준혁이</span>
+              <img src="images/avatar.jpg" alt="" />
+            </a>
+          </div>
+        </header>
 
-			<!-- Links -->
-			<section>
-				<ul class="links">
-					<li>
-						<a href="#">
-							<h3>Lorem ipsum</h3>
-							<p>Feugiat tempus veroeros dolor</p>
-						</a>
-					</li>
-					<li>
-						<a href="#">
-							<h3>Dolor sit amet</h3>
-							<p>Sed vitae justo condimentum</p>
-						</a>
-					</li>
-					<li>
-						<a href="#">
-							<h3>Feugiat veroeros</h3>
-							<p>Phasellus sed ultricies mi congue</p>
-						</a>
-					</li>
-					<li>
-						<a href="#">
-							<h3>Etiam sed consequat</h3>
-							<p>Porta lectus amet ultricies</p>
-						</a>
-					</li>
-				</ul>
-			</section>
+        <p id="post-content">로딩 중…</p>
 
-			<!-- Actions -->
-			<section>
-				<ul class="actions stacked">
-					<li><a href="#" class="button large fit">Log In</a></li>
-				</ul>
-			</section>
-		</section>
+        <footer>
+          <ul class="actions">
+            <li><a href="index.html" class="button large">뒤로 가기</a></li>
+          </ul>
+        </footer>
+      </article>
+    </div>
 
-		<!-- Main (JSON 데이터로 채워질 영역) -->
-		<div id="main">
+    <!-- Sidebar (생략 가능) -->
 
-			<article class="post">
-				<header>
-					<div class="title">
-						<h2><a href="#" id="post-title">로딩 중…</a></h2>
-						<p id="post-subtitle"></p>
-					</div>
-					<div class="meta">
-						<time class="published" datetime="" id="post-date">Loading date…</time>
-						<a href="#" class="author">
-							<span class="name">Jane Doe</span>
-							<img src="images/avatar.jpg" alt="" />
-						</a>
-					</div>
-				</header>
+  </div>
 
-				<!-- 필요 시 이미지를 넣고 싶다면 아래 주석을 풀고 경로를 설정하세요. -->
-				<!-- <a href="#" class="image featured"><img src="images/pic01.jpg" alt="" /></a> -->
+  <!-- 필수 스크립트 -->
+  <script src="assets/js/jquery.min.js"></script>
+  <script src="assets/js/browser.min.js"></script>
+  <script src="assets/js/breakpoints.min.js"></script>
+  <script src="assets/js/util.js"></script>
+  <script src="assets/js/main.js"></script>
 
-				<p id="post-content">로딩 중…</p>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const params = new URLSearchParams(window.location.search);
+      const issueId = params.get('id');
+      if (!issueId) {
+        document.getElementById('post-title').textContent = '잘못된 요청입니다.';
+        return;
+      }
 
-				<footer>
-					<ul class="actions">
-						<li><a href="index.html" class="button large">뒤로 가기</a></li>
-					</ul>
-					<ul class="stats">
-						<li><a href="#">General</a></li>
-						<li><a href="#" class="icon solid fa-heart">28</a></li>
-						<li><a href="#" class="icon solid fa-comment">128</a></li>
-					</ul>
-				</footer>
-			</article>
+      try {
+        const resp = await fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/api/issues?limit=100&offset=0');
+        if (!resp.ok) throw new Error(resp.statusText);
+        const issues = await resp.json();
 
-		</div>
+        const issue = issues.find(i => String(i.id) === issueId);
+        if (!issue) throw new Error('Not Found');
 
-		<!-- Sidebar -->
-		<section id="sidebar">
-			<!-- Intro, Posts List, About, Footer 등 기존 사이드바 내용이 있다면 여기에 넣으세요 -->
-		</section>
+        document.getElementById('post-title').textContent = issue.issue_name;
 
-	</div>
+        const dateElem = document.getElementById('post-date');
+        dateElem.setAttribute('datetime', issue.date);
+        dateElem.textContent = new Date(issue.date).toLocaleDateString();
 
-	<!-- Scripts -->
-	<script src="assets/js/jquery.min.js"></script>
-	<script src="assets/js/browser.min.js"></script>
-	<script src="assets/js/breakpoints.min.js"></script>
-	<script src="assets/js/util.js"></script>
-	<script src="assets/js/main.js"></script>
-
-	<!-- JSON을 불러와서 화면에 뿌려주는 스크립트 -->
-	<script>
-		document.addEventListener('DOMContentLoaded', function() {
-			// JSON 파일 경로를 'newstest.json' 으로 변경
-			const jsonPath = 'newstest.json';
-
-			fetch(jsonPath)
-				.then(response => {
-					if (!response.ok) {
-						throw new Error('JSON 파일을 불러오지 못했습니다.');
-					}
-					return response.json();
-				})
-				.then(data => {
-					// 1) 제목
-					document.getElementById('post-title').textContent = data.title;
-
-					// 2) 날짜
-					const dateElem = document.getElementById('post-date');
-					dateElem.textContent = data.date;
-					dateElem.setAttribute('datetime', data.date);
-
-					// 3) 본문 내용
-					document.getElementById('post-content').textContent = data.content;
-				})
-				.catch(err => {
-					console.error(err);
-					// 필요 시 로딩 실패 메시지를 표시하세요.
-				});
-		});
-	</script>
+        document.getElementById('post-content').textContent = issue.summary;
+      } catch (e) {
+        console.error('상세 뉴스 로드 중 에러:', e);
+        document.getElementById('post-title').textContent = '상세 뉴스를 불러오는 중 오류가 발생했습니다.';
+        document.getElementById('post-content').textContent = e.message;
+      }
+    });
+  </script>
 
 </body>
 </html>

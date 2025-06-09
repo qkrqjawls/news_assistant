@@ -1,75 +1,95 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>이슈 목록</title>
+  <meta charset="UTF-8" />
+  <title>뉴스 이슈 & 상세 뉴스</title>
   <style>
     body { font-family: sans-serif; padding: 20px; }
-    .issue { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
-    .issue h2 { margin: 0 0 5px; font-size: 1.2em; }
-    .issue .meta { color: #666; font-size: 0.9em; }
-    .issue .summary { margin: 10px 0; }
-    .issue .related { font-size: 0.85em; }
+    .issue { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; }
+    .issue h2 { margin: 0 0 5px; font-size: 1.4em; }
+    .issue .meta { color: #666; font-size: 0.9em; margin-bottom: 10px; }
+    .issue .summary { margin-bottom: 10px; }
+    .related-news { margin-left: 20px; }
+    .related-news h3 { margin: 5px 0; font-size: 1.1em; }
+    .related-news p { margin: 3px 0; font-size: 0.9em; }
   </style>
 </head>
 <body>
 
-  <h1>뉴스 이슈</h1>
-  <div id="issues-container">
-    <!-- 여기로 이슈들이 들어갑니다 -->
-  </div>
+  <h1>뉴스 이슈 & 상세 뉴스</h1>
+  <div id="issues-container">로딩 중…</div>
 
   <script>
-    // 페이지 로드되면 이슈 목록을 가져와서 그리기
-    document.addEventListener('DOMContentLoaded', async () => {
+    const BASE_URL = "https://news-assistant-app-public-1052035590147.us-central1.run.app";
+
+    async function fetchAndRender() {
       try {
-        // 1) API 호출
-        const res = await fetch('/api/issues?limit=10&offset=0');
-        if (!res.ok) throw new Error(res.statusText);
+        const res = await fetch(`${BASE_URL}/api/issues?limit=5&offset=0`);
+        if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
         const issues = await res.json();
-
-        // 2) 컨테이너 선택
         const container = document.getElementById('issues-container');
+        container.innerHTML = '';  // 초기 메시지 지우기
 
-        // 3) 받아온 데이터로 DOM 생성
         issues.forEach(issue => {
-          // 최상위 엘리먼트
           const div = document.createElement('div');
-          div.classList.add('issue');
+          div.className = 'issue';
 
-          // 제목
-          const h2 = document.createElement('h2');
-          h2.textContent = issue.issue_name;
-          div.appendChild(h2);
+          // 제목 & 날짜
+          const title = document.createElement('h2');
+          title.textContent = issue.issue_name;
+          div.appendChild(title);
 
-          // 날짜
           const meta = document.createElement('div');
-          meta.classList.add('meta');
+          meta.className = 'meta';
           meta.textContent = new Date(issue.date).toLocaleString();
           div.appendChild(meta);
 
           // 요약
-          const summary = document.createElement('p');
-          summary.classList.add('summary');
+          const summary = document.createElement('div');
+          summary.className = 'summary';
           summary.textContent = issue.summary;
           div.appendChild(summary);
 
-          // 관련 뉴스 ID 리스트
-          const related = document.createElement('div');
-          related.classList.add('related');
-          related.textContent = '관련 뉴스 IDs: ' + issue.related_news.join(', ');
-          div.appendChild(related);
+          // 관련 뉴스
+          if (issue.related_news.length) {
+            const rnContainer = document.createElement('div');
+            rnContainer.className = 'related-news';
 
-          // 컨테이너에 추가
+            const rnTitle = document.createElement('h3');
+            rnTitle.textContent = '관련 뉴스';
+            rnContainer.appendChild(rnTitle);
+
+            issue.related_news.forEach(news => {
+              const nDiv = document.createElement('div');
+
+              const nt = document.createElement('strong');
+              nt.textContent = news.title;
+              nDiv.appendChild(nt);
+
+              const nd = document.createElement('p');
+              // description이 없으면 content 앞부분 잘라서
+              nd.textContent = news.description 
+                ? news.description 
+                : (news.content || '').slice(0, 100) + '…';
+              nDiv.appendChild(nd);
+
+              rnContainer.appendChild(nDiv);
+            });
+
+            div.appendChild(rnContainer);
+          }
+
           container.appendChild(div);
         });
 
-      } catch (e) {
-        console.error('이슈 목록 조회 실패:', e);
-        const container = document.getElementById('issues-container');
-        container.textContent = '이슈를 불러오는 중 오류가 발생했습니다.';
+      } catch (err) {
+        console.error(err);
+        document.getElementById('issues-container').textContent =
+          '이슈 로드 중 오류 발생: ' + err.message;
       }
-    });
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchAndRender);
   </script>
 
 </body>
