@@ -45,40 +45,42 @@
       </section>
     </section>
 
-    <!-- ▼ 여기부터 post(article) 바로 삽입 ▼ -->
-    <article class="post">
-      <header>
-        <div class="title">
-          <h2><span id="post-title">로딩 중…</span></h2>
-        </div>
-        <div class="meta">
-          <time class="published" datetime="" id="post-date">Loading date…</time>
-          <a href="#" class="author">
-            <span class="name">준혁이</span>
-            <img src="images/avatar.jpg" alt="" />
-          </a>
-        </div>
-      </header>
+    <!-- ▼ Posts Section: About 바로 위에 위치하도록 섹션으로 감싸기 ▼ -->
+    <section id="post-section">
+      <article class="post">
+        <header>
+          <div class="title">
+            <h2><span id="post-title">로딩 중…</span></h2>
+          </div>
+          <div class="meta">
+            <time class="published" datetime="" id="post-date">Loading date…</time>
+            <a href="#" class="author">
+              <span class="name">준혁이</span>
+              <img src="images/avatar.jpg" alt="" />
+            </a>
+          </div>
+        </header>
 
-      <p id="post-content">로딩 중…</p>
+        <p id="post-content">로딩 중…</p>
 
-      <!-- 연관 기사 영역 -->
-      <section id="related-news">
-        <h2>연관 기사</h2>
-        <ul id="related-list">
-          <li>로딩 중…</li>
-        </ul>
-      </section>
+        <!-- 연관 기사 영역 -->
+        <section id="related-news">
+          <h2>연관 기사</h2>
+          <ul id="related-list">
+            <li>로딩 중…</li>
+          </ul>
+        </section>
 
-      <footer>
-        <ul class="actions">
-          <li><a href="index.html" class="button large">뒤로 가기</a></li>
-        </ul>
-      </footer>
-    </article>
-    <!-- ▲ post(article) 삽입 끝 ▲ -->
+        <footer>
+          <ul class="actions">
+            <li><a href="index.html" class="button large">뒤로 가기</a></li>
+          </ul>
+        </footer>
+      </article>
+    </section>
+    <!-- ▲ Posts Section 끝 ▲ -->
 
-    <!-- About (생략 가능) -->
+    <!-- About -->
     <section class="blurb">
       <h2>About</h2>
       <p>사실 이 프로젝트 제목은 준혁이의 허락을 받지 않고 어쩌고 저쩌고~</p>
@@ -142,7 +144,6 @@
             li.innerHTML = `
               <article class="related-item">
                 <h3>
-                  <!-- 수정된 부분: link 컬럼으로 이동 -->
                   <a href="${article.link}" target="_blank" rel="noopener">
                     ${article.title}
                   </a>
