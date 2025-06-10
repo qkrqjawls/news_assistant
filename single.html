@@ -38,6 +38,15 @@
 
         <p id="post-content">로딩 중…</p>
 
+        <!-- ▼ 연관 기사 영역 추가 ▼ -->
+        <section id="related-news">
+          <h2>연관 기사</h2>
+          <ul id="related-list">
+            <li>로딩 중…</li>
+          </ul>
+        </section>
+        <!-- ▲ 연관 기사 영역 추가 끝 ▲ -->
+
         <footer>
           <ul class="actions">
             <li><a href="index.html" class="button large">뒤로 가기</a></li>
@@ -73,13 +82,40 @@
         const issue = issues.find(i => String(i.id) === issueId);
         if (!issue) throw new Error('Not Found');
 
+        // 이슈 기본 정보 렌더링
         document.getElementById('post-title').textContent = issue.issue_name;
-
         const dateElem = document.getElementById('post-date');
         dateElem.setAttribute('datetime', issue.date);
         dateElem.textContent = new Date(issue.date).toLocaleDateString();
-
         document.getElementById('post-content').textContent = issue.summary;
+
+        // ▼ 연관 기사 렌더링 ▼
+        const relatedList = document.getElementById('related-list');
+        relatedList.innerHTML = ''; // 초기화
+
+        if (issue.related_news && issue.related_news.length) {
+          issue.related_news.forEach(article => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+              <article class="related-item">
+                <h3>
+                  <a href="single.html?id=${article.article_id}">
+                    ${article.title}
+                  </a>
+                </h3>
+                <time datetime="${article.published_at}">
+                  ${new Date(article.published_at).toLocaleDateString()}
+                </time>
+                <p>${article.description}</p>
+              </article>
+            `;
+            relatedList.appendChild(li);
+          });
+        } else {
+          relatedList.innerHTML = '<li>연관 기사가 없습니다.</li>';
+        }
+        // ▲ 연관 기사 렌더링 끝 ▲
+
       } catch (e) {
         console.error('상세 뉴스 로드 중 에러:', e);
         document.getElementById('post-title').textContent = '상세 뉴스를 불러오는 중 오류가 발생했습니다.';
