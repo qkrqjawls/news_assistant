@@ -1,77 +1,10 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>개발자 페이지 – 이슈 편집</title>
+  <title>준혁이는 뉴스 보기 귀찮아!</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <link rel="stylesheet" href="assets/css/main.css" />
-  <style>
-    /* 페이지 전체 컨테이너를 플렉스 레이아웃으로 */
-    #wrapper {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    /* 편집 영역 */
-    #editor {
-      flex: 1;
-      display: flex;
-      padding: 2rem;
-      gap: 2rem;
-      box-sizing: border-box;
-    }
-    /* 왼쪽 로고 영역 */
-    #editor .logo-box {
-      flex: 0 0 200px;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-    }
-    #editor .logo-box img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
-    /* 오른쪽 편집 폼 영역 */
-    #editor .form-box {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    #editor .form-box label {
-      font-weight: bold;
-      margin-top: 1rem;
-    }
-    #editor .form-box input[type="text"],
-    #editor .form-box textarea {
-      width: 100%;
-      padding: 0.75rem;
-      margin-top: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 1rem;
-      box-sizing: border-box;
-    }
-    #editor .form-box textarea {
-      flex: 1;
-      resize: vertical;
-      min-height: 200px;
-    }
-    #editor .form-box .actions {
-      margin-top: 1.5rem;
-      text-align: right;
-    }
-    #editor .form-box .actions button {
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      border: none;
-      background-color: #007acc;
-      color: white;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-  </style>
 </head>
 <body class="is-preload">
 
@@ -79,47 +12,180 @@
 
     <!-- Header -->
     <header id="header">
-      <h1><a href="index.html">개발자 이슈 편집</a></h1>
+      <h1><a href="index.html">준혁이는 뉴스 보기 귀찮아!</a></h1>
+      <nav class="links">
+        <ul>
+          <li><a href="#">Lorem</a></li>
+          <li><a href="#">Ipsum</a></li>
+          <li><a href="#">Feugiat</a></li>
+          <li><a href="#">Tempus</a></li>
+          <li><a href="#">Adipiscing</a></li>
+        </ul>
+      </nav>
+      <nav class="main">
+        <ul>
+          <li class="menu"><a class="fa-bars" href="#menu">Menu</a></li>
+        </ul>
+      </nav>
     </header>
 
-    <!-- 편집 에디터 -->
-    <section id="editor">
-      <!-- 왼쪽: 로고 이미지 박스 -->
-      <div class="logo-box">
-        <img src="images/로고1.png" alt="프로젝트 로고" />
-      </div>
-      <!-- 오른쪽: 입력 폼 -->
-      <div class="form-box">
-        <label for="issue-title">이슈 제목</label>
-        <input type="text" id="issue-title" placeholder="제목을 입력하세요" />
+    <!-- Menu -->
+    <section id="menu">
+      <section>
+        <ul class="links" id="menuLinks">
+          <li>
+            <a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a>
+          </li>
+          <li>
+            <a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a>
+          </li>
+        </ul>
+      </section>
+    </section>
 
-        <label for="issue-summary">요약 내용</label>
-        <textarea id="issue-summary" placeholder="요약 내용을 입력하세요"></textarea>
+    <!-- Sidebar Intro -->
+    <section id="sidebar">
+      <section id="intro">
+        <a href="#" class="logo"><img src="images/로고1.png" alt="" /></a>
+        <header>
+          <h2>준혁이는 뉴스 보기 귀찮아!</h2>
+          <p>인공지능 프로젝트</p>
+        </header>
+      </section>
+    </section>
 
-        <label for="issue-related">연관 기사 (콤마로 구분된 ID)</label>
-        <input type="text" id="issue-related" placeholder="123,456,789" />
+    <!-- Posts List -->
+    <section>
+      <ul class="posts" id="postsList">
+        <!-- 개발자 프로필 항목 (두 명) -->
+        <li>
+          <article>
+            <a href="#" class="image"><img src="images/dev1.png" alt="개발자1" /></a>
+            <header>
+              <h3>홍길동</h3>
+              <p>백엔드 개발 및 API 설계 담당</p>
+            </header>
+          </article>
+        </li>
+        <li>
+          <article>
+            <a href="#" class="image"><img src="images/dev2.png" alt="개발자2" /></a>
+            <header>
+              <h3>김영희</h3>
+              <p>프론트엔드 및 UI/UX 디자인 담당</p>
+            </header>
+          </article>
+        </li>
+        <!-- JS로 채워지는 이슈 항목들 -->
+      </ul>
+    </section>
 
-        <div class="actions">
-          <button id="save-btn">저장하기</button>
-        </div>
-      </div>
+    <!-- About -->
+    <section class="blurb">
+      <h2>About</h2>
+      <p>사실 이 프로젝트 제목은 준혁이의 허락을 받지 않고 어쩌고 저쩌고~</p>
+      <ul class="actions">
+        <li><a href="#" class="button">Learn More</a></li>
+      </ul>
     </section>
 
     <!-- Footer -->
-    <footer id="footer">
-      <p>&copy; 준혁이는 뉴스 보기 귀찮아! 개발자 페이지</p>
-    </footer>
+    <section id="footer">
+      <ul class="icons">
+        <li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+        <li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+        <li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+        <li><a href="#" class="icon solid fa-rss"><span class="label">RSS</span></a></li>
+        <li><a href="#" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
+      </ul>
+      <p class="copyright">&copy; Untitled. Design: <a href="http://html5up.net">HTML5 UP</a>.</p>
+    </section>
 
   </div>
 
+  <!-- 필수 스크립트 -->
+  <script src="assets/js/jquery.min.js"></script>
+  <script src="assets/js/browser.min.js"></script>
+  <script src="assets/js/breakpoints.min.js"></script>
+  <script src="assets/js/util.js"></script>
+  <script src="assets/js/main.js"></script>
+
   <script>
-    document.getElementById('save-btn').addEventListener('click', () => {
-      const title = document.getElementById('issue-title').value;
-      const summary = document.getElementById('issue-summary').value;
-      const related = document.getElementById('issue-related').value;
-      // TODO: API 호출 로직 구현
-      console.log({ title, summary, related });
-      alert('저장 요청이 콘솔에 출력되었습니다.');
+    document.addEventListener('DOMContentLoaded', () => {
+      const API_BASE  = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
+      const postsList = document.getElementById('postsList');
+
+      let limit = 10;
+      let offset = 0;
+      let loading = false;
+      let finished = false;
+
+      async function loadIssues() {
+        if (loading || finished) return;
+        loading = true;
+        try {
+          const resp = await fetch(
+            `${API_BASE}/api/issues?limit=${limit}&offset=${offset}`,
+            { credentials: 'include' }
+          );
+          if (!resp.ok) throw new Error(resp.statusText);
+          const issues = await resp.json();
+          if (issues.length === 0) {
+            finished = true;
+            return;
+          }
+          issues.forEach(issue => {
+            if (postsList.querySelector(`li[data-issue-id="${issue.id}"]`)) return;
+            const li = document.createElement('li');
+            li.setAttribute('data-issue-id', issue.id);
+            li.innerHTML = `
+              <article>
+                <header>
+                  <h3><a href="single.html?id=${issue.id}">${issue.issue_name}</a></h3>
+                  <p class="related-count">연관 기사: ${issue.related_news.length}개</p>
+                  <time class="published" datetime="${issue.date}">
+                    ${new Date(issue.date).toLocaleString()}
+                  </time>
+                </header>
+                <a href="single.html?id=${issue.id}" class="image">
+                  <img
+                    class="rotator"
+                    src="images/noimage.jpg"
+                    onerror="this.src='images/noimage.jpg'"
+                    alt="관련 기사 이미지"
+                    width="200" height="150"
+                  />
+                </a>
+              </article>
+            `;
+            postsList.appendChild(li);
+
+            const images = (issue.related_news || []).map(n => n.image_url).filter(u => u);
+            if (images.length) {
+              let idx = 0;
+              const imgEl = li.querySelector('img.rotator');
+              imgEl.src = images[0];
+              imgEl.onerror = () => imgEl.src = 'images/noimage.jpg';
+              setInterval(() => {
+                idx = (idx + 1) % images.length;
+                imgEl.src = images[idx];
+              }, 5000);
+            }
+          });
+          offset += limit;
+        } catch (e) {
+          console.error('이슈 로드 중 에러:', e);
+        } finally {
+          loading = false;
+        }
+      }
+
+      loadIssues();
+      window.addEventListener('scroll', () => {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+          loadIssues();
+        }
+      });
     });
   </script>
 
