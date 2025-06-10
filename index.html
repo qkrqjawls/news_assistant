@@ -89,15 +89,25 @@
   <script src="assets/js/util.js"></script>
   <script src="assets/js/main.js"></script> <!-- :contentReference[oaicite:6]{index=6} -->
 
-  <!-- 로그인 상태에 따라 메뉴 업데이트 (editorpage.html에서 복사) -->
+  <!-- 로그인 상태에 따라 메뉴 업데이트 (수정판) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const links = document.getElementById('menuLinks');
       fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/profile', {
         credentials: 'include'
-      }).then(res => {
+      })
+      .then(async res => {
         links.innerHTML = '';
         if (res.ok) {
+          // 1) 프로필 정보(JSON) 파싱
+          const profile = await res.json();
+          // 2) 인사 문구 삽입
+          links.innerHTML += `
+            <li class="greeting">
+              <h3>안녕하세요. ${profile.id}님</h3>
+            </li>
+          `;
+          // 3) 기존 Categories / Log Out
           links.innerHTML += `
             <li><a href="editinfo.html"><h3>Categories</h3><p>카테고리 수정</p></a></li>
             <li><a href="#" id="logout"><h3>Log Out</h3><p>로그아웃</p></a></li>
@@ -111,17 +121,23 @@
             window.location.reload();
           });
         } else {
+          // 비로그인 상태: 로그인/회원가입
           links.innerHTML += `
             <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
             <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
           `;
         }
+        // 항상: Developer Page
         links.innerHTML += `
           <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
         `;
+      })
+      .catch(err => {
+        console.error('프로필 로드 실패:', err);
       });
     });
-  </script> <!-- :contentReference[oaicite:7]{index=7} -->
+  </script>
+
 
   <!-- 중복검사 · 이미지 로테이션 · 초기 로드 · 무한 스크롤 (원본 index.html) -->
   <script>
