@@ -5,6 +5,49 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <link rel="stylesheet" href="assets/css/main.css" />
+  <style>
+    /* Posts List: 이미지 왼쪽, 텍스트 오른쪽 */
+    .posts li article {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .posts li article .image {
+      flex: 0 0 auto;
+    }
+    .posts li article .image img {
+      width: 100px;
+      height: auto;
+      border-radius: 4px;
+    }
+    .posts li article header {
+      flex: 1;
+    }
+    .posts li article header small {
+      display: block;
+      margin-top: 0.25rem;
+      color: #777;
+      font-size: 0.9rem;
+    }
+
+    /* Slide-out menu */
+    #menu {
+      position: fixed;
+      top: 0; right: -300px;
+      width: 300px; height: 100%;
+      background: #fff;
+      box-shadow: -2px 0 6px rgba(0,0,0,0.2);
+      transition: right 0.3s ease;
+      padding: 2rem;
+      box-sizing: border-box;
+      z-index: 1000;
+    }
+    #menu.open { right: 0; }
+    #menu ul { list-style: none; padding: 0; margin: 0; }
+    #menu li { margin-bottom: 1rem; }
+    #menu a { text-decoration: none; color: #333; font-size: 1.1rem; }
+  </style>
 </head>
 <body class="is-preload">
 
@@ -33,7 +76,12 @@
     <section id="menu">
       <section>
         <ul class="links" id="menuLinks">
-          <!-- 로그인 상태에 따라 JS로 교체됩니다 -->
+          <li>
+            <a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a>
+          </li>
+          <li>
+            <a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a>
+          </li>
         </ul>
       </section>
     </section>
@@ -77,14 +125,14 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1) 메뉴 토글
+      // 메뉴 토글
       const menu = document.getElementById('menu');
       document.querySelector('#header .menu a').addEventListener('click', e => {
         e.preventDefault();
         menu.classList.toggle('open');
       });
 
-      // 2) 메뉴 링크 동적 구성
+      // 로그인 상태에 따라 메뉴 구성
       fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/profile', {
         credentials: 'include'
       }).then(res => {
@@ -111,7 +159,7 @@
         }
       });
 
-      // 3) PostsList에 두 개의 테스트 항목 추가
+      // PostsList에 2개 항목 추가
       const postsList = document.getElementById('postsList');
       const items = [
         { img: 'images/로고1.png', text: 'test' },
@@ -126,6 +174,7 @@
             </a>
             <header>
               <h3>${item.text}</h3>
+              <small>test2</small>
             </header>
           </article>
         `;
