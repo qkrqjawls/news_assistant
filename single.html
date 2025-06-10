@@ -24,12 +24,8 @@
     <section id="menu">
       <section>
         <ul class="links" id="menuLinks">
-          <li>
-            <a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a>
-          </li>
-          <li>
-            <a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a>
-          </li>
+          <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
+          <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
         </ul>
       </section>
     </section>
@@ -108,51 +104,59 @@
         return;
       }
 
+      const API = 'https://news-assistant-app-public-1052035590147.us-central1.run.app/api/issues?limit=100&offset=0';
+
       try {
-        const resp = await fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/api/issues?limit=100&offset=0');
+        // 1) 전체 데이터를 가져오되, 연관기사 처리는 뒤로 미룸
+        const resp = await fetch(API);
         if (!resp.ok) throw new Error(resp.statusText);
         const issues = await resp.json();
-
         const issue = issues.find(i => String(i.id) === issueId);
         if (!issue) throw new Error('Not Found');
 
-        // 1) 요약기사 렌더링 (최우선)
+        // 2) 바로 요약기사 렌더링
         document.getElementById('post-title').textContent = issue.issue_name;
         const dateElem = document.getElementById('post-date');
         dateElem.setAttribute('datetime', issue.date);
         dateElem.textContent = new Date(issue.date).toLocaleDateString();
         document.getElementById('post-content').textContent = issue.summary;
 
-        // 2) 연관기사 렌더링은 requestAnimationFrame 으로 분리
+        // 3) 요약 보여진 다음에 연관기사 데이터 fetch & 렌더
         requestAnimationFrame(() => {
-          const relatedList = document.getElementById('related-list');
-          relatedList.innerHTML = '';
-
-          if (issue.related_news && issue.related_news.length) {
-            issue.related_news.forEach(article => {
-              const li = document.createElement('li');
-              li.innerHTML = `
-                <article class="related-item">
-                  <h3>
-                    <a href="${article.link}" target="_blank" rel="noopener">
-                      ${article.title}
-                    </a>
-                  </h3>
-                  <time datetime="${article.published_at}">
-                    ${new Date(article.published_at).toLocaleDateString()}
-                  </time>
-                  <p>${article.description}</p>
-                </article>
-              `;
-              relatedList.appendChild(li);
+          fetch(API)
+            .then(r => r.json())
+            .then(data => {
+              const rel = data.find(i => String(i.id) === issueId).related_news || [];
+              const relatedList = document.getElementById('related-list');
+              relatedList.innerHTML = '';
+              if (rel.length) {
+                rel.forEach(article => {
+                  const li = document.createElement('li');
+                  li.innerHTML = `
+                    <article class="related-item">
+                      <h3>
+                        <a href="${article.link}" target="_blank" rel="noopener">
+                          ${article.title}
+                        </a>
+                      </h3>
+                      <time datetime="${article.published_at}">
+                        ${new Date(article.published_at).toLocaleDateString()}
+                      </time>
+                      <p>${article.description}</p>
+                    </article>`;
+                  relatedList.appendChild(li);
+                });
+              } else {
+                relatedList.innerHTML = '<li>연관 기사가 없습니다.</li>';
+              }
+            })
+            .catch(() => {
+              document.getElementById('related-list').innerHTML = '<li>연관 기사 로드 실패</li>';
             });
-          } else {
-            relatedList.innerHTML = '<li>연관 기사가 없습니다.</li>';
-          }
         });
 
       } catch (e) {
-        console.error('상세 뉴스 로드 중 에러:', e);
+        console.error(e);
         document.getElementById('post-title').textContent = '상세 뉴스를 불러오는 중 오류가 발생했습니다.';
         document.getElementById('post-content').textContent = e.message;
       }
