@@ -124,7 +124,7 @@
               );
               if (!resp.ok) throw new Error(resp.statusText);
               // 로그아웃 성공 시 로그인 페이지로 이동
-              window.location.href = 'login.html';
+              window.location.reload();
             } catch (err) {
               console.error('로그아웃 실패:', err);
               alert('로그아웃 중 오류가 발생했습니다.');
