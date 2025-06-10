@@ -1,59 +1,46 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>준혁이는 뉴스 보기 귀찮아!</title>
+  <title>개발자 이슈 편집</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <link rel="stylesheet" href="assets/css/main.css" />
   <style>
-    /* Posts List: 이미지 왼쪽, 텍스트 오른쪽 */
-    .posts li article {
+    /* 개발자 프로필 레이아웃 */
+    .dev-item {
       display: flex;
       align-items: center;
-      gap: 1rem;
-      margin: 2rem 0;
+      margin: 3rem 2rem;
     }
-    .posts li article .image {
-      flex: 0 0 auto;
+    .dev-item .image {
+      flex: 0 0 150px;
+      margin-right: 1.5rem;
     }
-    .posts li article .image img {
-      width: 100px;
-      height: auto;
-      border-radius: 4px;
+    .dev-item .image img {
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
-    .posts li article header {
+    .dev-item .details {
       flex: 1;
     }
-    .posts li article header small {
-      display: block;
-      margin-top: 0.25rem;
-      color: #777;
-      font-size: 0.9rem;
+    .dev-item .details h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1.5rem;
     }
-
-    /* Slide-out menu */
-    #menu {
-      position: fixed;
-      top: 0; right: -300px;
-      width: 300px; height: 100%;
-      background: #fff;
-      box-shadow: -2px 0 6px rgba(0,0,0,0.2);
-      transition: right 0.3s ease;
-      padding: 2rem;
-      box-sizing: border-box;
-      z-index: 1000;
+    .dev-item .details p {
+      margin: 0;
+      color: #555;
+      line-height: 1.6;
+      font-size: 1.1rem;
     }
-    #menu.open { right: 0; }
-    #menu ul { list-style: none; padding: 0; margin: 0; }
-    #menu li { margin-bottom: 1rem; }
-    #menu a { text-decoration: none; color: #333; font-size: 1.1rem; }
   </style>
 </head>
 <body class="is-preload">
 
   <div id="wrapper">
 
-    <!-- Header -->
+    <!-- Header (index.html과 동일) -->
     <header id="header">
       <h1><a href="index.html">준혁이는 뉴스 보기 귀찮아!</a></h1>
       <nav class="links">
@@ -72,37 +59,41 @@
       </nav>
     </header>
 
-    <!-- Menu -->
+    <!-- Menu (index.html과 동일) -->
     <section id="menu">
       <section>
         <ul class="links" id="menuLinks">
-          <li>
-            <a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a>
-          </li>
-          <li>
-            <a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a>
-          </li>
+          <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
+          <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
         </ul>
       </section>
     </section>
 
-    <!-- Posts List -->
+    <!-- 개발자 프로필 리스트 -->
     <section>
-      <ul class="posts" id="postsList">
-        <!-- JS로 채워집니다 -->
+      <ul class="posts">
+        <li class="dev-item">
+          <div class="image">
+            <img src="images/로고1.png" alt="홍길동" />
+          </div>
+          <div class="details">
+            <h3>홍길동</h3>
+            <p>백엔드 개발 및 API 설계 담당</p>
+          </div>
+        </li>
+        <li class="dev-item">
+          <div class="image">
+            <img src="images/로고1.png" alt="김영희" />
+          </div>
+          <div class="details">
+            <h3>김영희</h3>
+            <p>프론트엔드 및 UI/UX 디자인 담당</p>
+          </div>
+        </li>
       </ul>
     </section>
 
-    <!-- About -->
-    <section class="blurb">
-      <h2>About</h2>
-      <p>사실 이 프로젝트 제목은 준혁이의 허락을 받지 않고 어쩌고 저쩌고~</p>
-      <ul class="actions">
-        <li><a href="#" class="button">Learn More</a></li>
-      </ul>
-    </section>
-
-    <!-- Footer -->
+    <!-- Footer (index.html과 동일) -->
     <section id="footer">
       <ul class="icons">
         <li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
@@ -116,27 +107,20 @@
 
   </div>
 
-  <!-- 필수 스크립트 -->
+  <!-- 필수 스크립트 (index.html과 동일) -->
   <script src="assets/js/jquery.min.js"></script>
   <script src="assets/js/browser.min.js"></script>
   <script src="assets/js/breakpoints.min.js"></script>
   <script src="assets/js/util.js"></script>
   <script src="assets/js/main.js"></script>
 
+  <!-- 로그인 상태에 따라 메뉴를 업데이트하는 스크립트 (index.html과 동일) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 메뉴 토글
-      const menu = document.getElementById('menu');
-      document.querySelector('#header .menu a').addEventListener('click', e => {
-        e.preventDefault();
-        menu.classList.toggle('open');
-      });
-
-      // 로그인 상태에 따라 메뉴 구성
+      const links = document.getElementById('menuLinks');
       fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/profile', {
         credentials: 'include'
       }).then(res => {
-        const links = document.getElementById('menuLinks');
         links.innerHTML = '';
         if (res.ok) {
           links.innerHTML = `
@@ -157,28 +141,6 @@
             <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
           `;
         }
-      });
-
-      // PostsList에 2개 항목 추가
-      const postsList = document.getElementById('postsList');
-      const items = [
-        { img: 'images/로고1.png', text: 'test' },
-        { img: 'images/로고1.png', text: 'test' }
-      ];
-      items.forEach(item => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <article>
-            <a href="#" class="image">
-              <img src="${item.img}" alt="dev" />
-            </a>
-            <header>
-              <h3>${item.text}</h3>
-              <small>test2</small>
-            </header>
-          </article>
-        `;
-        postsList.appendChild(li);
       });
     });
   </script>
