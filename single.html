@@ -95,13 +95,22 @@
 
       const API = 'https://news-assistant-app-public-1052035590147.us-central1.run.app/api/issues?limit=100&offset=0';
 
-      // 로딩 애니메이션: '.', '..', '...' 순환
+      // 요약 콘텐츠 로딩 애니메이션
       const contentEl = document.getElementById('post-content');
       const dotStates = ['로딩 중.', '로딩 중..', '로딩 중...'];
       let dotIndex = 0;
       const dotInterval = setInterval(() => {
         contentEl.textContent = dotStates[dotIndex % dotStates.length];
         dotIndex++;
+      }, 500);
+
+      // 연관 기사 로딩 애니메이션
+      const relatedListEl = document.getElementById('related-list');
+      const relDotStates = ['로딩 중.', '로딩 중..', '로딩 중...'];
+      let relDotIndex = 0;
+      const relInterval = setInterval(() => {
+        relatedListEl.textContent = relDotStates[relDotIndex % relDotStates.length];
+        relDotIndex++;
       }, 500);
 
       try {
@@ -115,21 +124,21 @@
         // 로딩 애니메이션 중지
         clearInterval(dotInterval);
 
-        // 2) 바로 요약기사 렌더링
+        // 2) 요약기사 렌더링
         document.getElementById('post-title').textContent = issue.issue_name;
         const dateElem = document.getElementById('post-date');
         dateElem.setAttribute('datetime', issue.date);
         dateElem.textContent = new Date(issue.date).toLocaleDateString();
         contentEl.textContent = issue.summary;
 
-        // 3) 요약 보여진 다음에 연관기사 데이터 fetch & 렌더
+        // 3) 요약 보여진 다음에 연관기사 데이터 렌더
         requestAnimationFrame(() => {
           fetch(API)
             .then(r => r.json())
             .then(data => {
+              clearInterval(relInterval);
               const rel = data.find(i => String(i.id) === issueId).related_news || [];
-              const relatedList = document.getElementById('related-list');
-              relatedList.innerHTML = '';
+              relatedListEl.innerHTML = '';
               if (rel.length) {
                 rel.forEach(article => {
                   const li = document.createElement('li');
@@ -145,19 +154,21 @@
                       </time>
                       <p>${article.description}</p>
                     </article>`;
-                  relatedList.appendChild(li);
+                  relatedListEl.appendChild(li);
                 });
               } else {
-                relatedList.innerHTML = '<li>연관 기사가 없습니다.</li>';
+                relatedListEl.innerHTML = '<li>연관 기사가 없습니다.</li>';
               }
             })
             .catch(() => {
-              document.getElementById('related-list').innerHTML = '<li>연관 기사 로드 실패</li>';
+              clearInterval(relInterval);
+              relatedListEl.innerHTML = '<li>연관 기사 로드 실패</li>';
             });
         });
 
       } catch (e) {
         clearInterval(dotInterval);
+        clearInterval(relInterval);
         console.error(e);
         document.getElementById('post-title').textContent = '상세 뉴스를 불러오는 중 오류가 발생했습니다.';
         contentEl.textContent = e.message;
