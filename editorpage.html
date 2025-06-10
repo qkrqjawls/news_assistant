@@ -1,78 +1,73 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>준혁이는 뉴스 보기 귀찮아!</title>
+  <title>개발자 페이지 – 이슈 편집</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <link rel="stylesheet" href="assets/css/main.css" />
   <style>
-    /* 메뉴바 (index.html에서 가져옴) */
-    header#header nav.links ul,
-    header#header nav.main ul {
+    /* Header & 메뉴 */
+    #header {
       display: flex;
-      gap: 1rem;
-      list-style: none;
-      padding: 0;
-      margin: 0;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: #f5f5f5;
     }
-    header#header nav.links a,
-    header#header nav.main a {
-      text-decoration: none;
-      color: inherit;
+    #header .menu-toggle {
+      font-size: 1.5rem;
+      cursor: pointer;
     }
-
+    /* 슬라이드 아웃 메뉴 */
+    #menu {
+      position: fixed;
+      top: 0; right: -300px;
+      width: 300px; height: 100%;
+      background: #fff;
+      box-shadow: -2px 0 6px rgba(0,0,0,0.2);
+      transition: right 0.3s ease;
+      padding: 2rem;
+      box-sizing: border-box;
+      z-index: 1000;
+    }
+    #menu.open { right: 0; }
+    #menu ul { list-style: none; padding: 0; margin: 0; }
+    #menu li { margin-bottom: 1rem; }
+    #menu a { text-decoration: none; color: #333; font-size: 1.1rem; }
     /* 개발자 프로필 레이아웃 */
     .dev-item {
-      display: flex;
-      align-items: center;
-      margin: 3rem 0; /* 상하 간격을 더 넓힘 */
+      display: flex; align-items: center;
+      margin: 3rem 2rem;
     }
     .dev-item .image {
-      flex: 0 0 150px;
-      margin-right: 1.5rem;
+      flex: 0 0 150px; margin-right: 1.5rem;
     }
     .dev-item .image img {
-      width: 100%;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      width: 100%; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
     .dev-item .details {
       flex: 1;
     }
-    .dev-item .details h3 {
-      margin: 0 0 0.5rem;
-      font-size: 1.5rem;
-    }
-    .dev-item .details p {
-      margin: 0;
-      color: #555;
-      line-height: 1.6;
-      font-size: 1.1rem;
-    }
+    .dev-item .details h3 { margin: 0 0 0.5rem; font-size: 1.5rem; }
+    .dev-item .details p { margin: 0; color: #555; line-height: 1.6; font-size: 1.1rem; }
   </style>
 </head>
 <body class="is-preload">
 
   <div id="wrapper">
 
-    <!-- Header & 메뉴 -->
+    <!-- Header -->
     <header id="header">
-      <h1><a href="index.html">준혁이는 뉴스 보기 귀찮아!</a></h1>
-      <nav class="links">
-        <ul>
-          <li><a href="#">Lorem</a></li>
-          <li><a href="#">Ipsum</a></li>
-          <li><a href="#">Feugiat</a></li>
-          <li><a href="#">Tempus</a></li>
-          <li><a href="#">Adipiscing</a></li>
-        </ul>
-      </nav>
-      <nav class="main">
-        <ul>
-          <li class="menu"><a class="fa-bars" href="#menu">Menu</a></li>
-        </ul>
-      </nav>
+      <h1>개발자 이슈 편집</h1>
+      <div class="menu-toggle" id="menuToggle">&#9776;</div>
     </header>
+
+    <!-- Slide-out Menu -->
+    <section id="menu">
+      <ul id="menuLinks">
+        <!-- JavaScript가 로그인 상태에 따라 여기 채웁니다 -->
+      </ul>
+    </section>
 
     <!-- 개발자 프로필 리스트 -->
     <section>
@@ -99,11 +94,50 @@
     </section>
 
     <!-- Footer -->
-    <section id="footer">
-      <p>&copy; 준혁이는 뉴스 보기 귀찮아!</p>
-    </section>
+    <footer id="footer">
+      <p>&copy; 준혁이는 뉴스 보기 귀찮아! 개발자 페이지</p>
+    </footer>
 
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const menu = document.getElementById('menu');
+      document.getElementById('menuToggle').addEventListener('click', () => {
+        menu.classList.toggle('open');
+      });
+
+      // 로그인 상태 확인
+      fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/profile', {
+        credentials: 'include'
+      })
+      .then(res => {
+        const links = document.getElementById('menuLinks');
+        links.innerHTML = '';
+        if (res.ok) {
+          // 로그인 되어 있을 때
+          links.innerHTML = `
+            <li><a href="categories.html">카테고리 수정</a></li>
+            <li><a href="#" id="logoutLink">로그아웃</a></li>
+          `;
+          document.getElementById('logoutLink').addEventListener('click', async e => {
+            e.preventDefault();
+            await fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/logout', {
+              method: 'POST',
+              credentials: 'include'
+            });
+            window.location.reload();
+          });
+        } else {
+          // 비로그인 상태
+          links.innerHTML = `
+            <li><a href="login.html">Log In</a></li>
+            <li><a href="signup.html">Sign Up</a></li>
+          `;
+        }
+      });
+    });
+  </script>
 
 </body>
 </html>
