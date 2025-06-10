@@ -126,7 +126,7 @@
             li.innerHTML = `
               <article>
                 <header>
-                  <h3><a href="single.html?id=${issue.id}">${issue.issue_name}</a></h3>
+                  <h3><a id="issue ${issue.id}" href="single.html?id=${issue.id}">${issue.issue_name}</a></h3>
                   <time class="published" datetime="${issue.date}">
                     ${new Date(issue.date).toLocaleDateString()}
                   </time>
@@ -159,10 +159,24 @@
                 imgEl.src = images[idx];
               }, 5000);
             }
+
+            const anchor = li.getElementById(`issue ${issue.id}`)
+            anchor.addEventListener('click', async () => {
+              const resp = await fetch(`${API_BASE}/click-event`, {
+                method: 'POST', // HTTP 메소드
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  "issue_id" : issue_id
+                }),
+                credentials: 'include'
+              });
+              if (!resp.ok) throw new Error(resp.statusText);
+            })
           });
-          offset += limit;
         } catch (e) {
-          console.error('이슈 로드 중 에러:', e);
+          console.error('클릭 이벤트 전달 중 에러:', e);
         }
       }
 
