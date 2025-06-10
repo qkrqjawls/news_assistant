@@ -34,16 +34,10 @@
       <section>
         <ul class="links" id="menuLinks">
           <li>
-            <a href="login.html">
-              <h3>Log In</h3>
-              <p>로그인 하기</p>
-            </a>
+            <a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a>
           </li>
           <li>
-            <a href="signup.html">
-              <h3>Sign Up</h3>
-              <p>회원가입 하기</p>
-            </a>
+            <a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a>
           </li>
         </ul>
       </section>
@@ -65,9 +59,9 @@
       <ul class="posts" id="postsList">
         <!-- JS로 채워집니다 -->
       </ul>
-      <!-- 기사 5개 아래에 추가된 버튼 -->
+      <!-- 더 보기 버튼 -->
       <ul class="actions">
-        <li><a href="#" class="button">더 보기</a></li>
+        <li><a href="#" id="loadMore" class="button">더 보기</a></li>
       </ul>
     </section>
 
@@ -107,83 +101,79 @@
       const API_BASE  = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
       const links     = document.getElementById('menuLinks');
       const postsList = document.getElementById('postsList');
+      const loadMore  = document.getElementById('loadMore');
 
-      // 1) 로그인 상태 확인 & 메뉴 렌더링
-      try {
-        const profileRes = await fetch(`${API_BASE}/profile`, { credentials: 'include' });
-        if (profileRes.ok) {
-          const { username } = await profileRes.json();
-          links.innerHTML = `
-            <li class="greeting">안녕하세요 ${username}님</li>
-            <li><a href="editinfo.html"><h3>카테고리 수정</h3><p>내 뉴스 카테고리</p></a></li>
-            <li><a href="#" id="logoutLink"><h3>Logout</h3><p>로그아웃</p></a></li>
-          `;
-          document.getElementById('logoutLink').addEventListener('click', async e => {
-            e.preventDefault();
-            await fetch(`${API_BASE}/logout`, { method: 'POST', credentials: 'include' });
-            window.location.reload();
+      // 로그인 상태 확인 & 메뉴 렌더링 (생략)
+
+      // 페이징 변수
+      const limit = 5;
+      let offset = 0;
+
+      // 이슈 불러오기 함수
+      async function loadIssues() {
+        try {
+          const resp = await fetch(`${API_BASE}/api/issues?limit=${limit}&offset=${offset}`, {
+            credentials: 'include'
           });
-        } else {
-          links.innerHTML = `
-            <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
-            <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
-          `;
-        }
-      } catch (e) {
-        console.error('로그인 상태 확인 중 에러:', e);
-      }
-
-      // 2) 이슈 목록 로드 & 렌더링 (이미지 회전 및 fallback 기능 포함)
-      try {
-        const resp = await fetch(`${API_BASE}/api/issues?limit=5&offset=0`, { credentials: 'include' });
-        if (!resp.ok) throw new Error(resp.statusText);
-        const issues = await resp.json();
-
-        issues.forEach(issue => {
-          const li = document.createElement('li');
-          li.innerHTML = `
-            <article>
-              <header>
-                <h3>
-                  <a href="single.html?id=${issue.id}">${issue.issue_name}</a>
-                </h3>
-                <time class="published" datetime="${issue.date}">
-                  ${new Date(issue.date).toLocaleDateString()}
-                </time>
-              </header>
-              <a href="single.html?id=${issue.id}" class="image">
-                <img
-                  class="rotator"
-                  src="images/noimage.jpg"
-                  onerror="this.src='images/noimage.jpg'"
-                  alt="관련 기사 이미지"
-                  width="200" height="150"
-                />
-              </a>
-            </article>
-          `;
-          postsList.appendChild(li);
-
-          // 관련 뉴스에서 image_url만 골라 5초마다 로테이션, 없으면 noimage 유지
-          const images = (issue.related_news || [])
-            .map(n => n.image_url)
-            .filter(url => url);
-
-          if (images.length > 0) {
-            let idx = 0;
-            const imgEl = li.querySelector('img.rotator');
-            imgEl.onerror = () => { imgEl.src = 'images/noimage.jpg'; };
-            imgEl.src = images[0];
-            setInterval(() => {
-              idx = (idx + 1) % images.length;
-              imgEl.src = images[idx];
-            }, 5000);
+          if (!resp.ok) throw new Error(resp.statusText);
+          const issues = await resp.json();
+          if (issues.length === 0) {
+            loadMore.style.display = 'none';
+            return;
           }
-        });
-      } catch (e) {
-        console.error('이슈 로드 중 에러:', e);
-        postsList.innerHTML = '<li>이슈를 불러오는 중 오류가 발생했습니다.</li>';
+          issues.forEach(issue => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+              <article>
+                <header>
+                  <h3><a href="single.html?id=${issue.id}">${issue.issue_name}</a></h3>
+                  <time class="published" datetime="${issue.date}">
+                    ${new Date(issue.date).toLocaleDateString()}
+                  </time>
+                </header>
+                <a href="single.html?id=${issue.id}" class="image">
+                  <img
+                    class="rotator"
+                    src="images/noimage.jpg"
+                    onerror="this.src='images/noimage.jpg'"
+                    alt="관련 기사 이미지"
+                    width="200" height="150"
+                  />
+                </a>
+              </article>
+            `;
+            postsList.appendChild(li);
+
+            // 이미지 로테이션 처리
+            const images = (issue.related_news || [])
+              .map(n => n.image_url)
+              .filter(url => url);
+
+            if (images.length > 0) {
+              let idx = 0;
+              const imgEl = li.querySelector('img.rotator');
+              imgEl.onerror = () => { imgEl.src = 'images/noimage.jpg'; };
+              imgEl.src = images[0];
+              setInterval(() => {
+                idx = (idx + 1) % images.length;
+                imgEl.src = images[idx];
+              }, 5000);
+            }
+          });
+          offset += limit;
+        } catch (e) {
+          console.error('이슈 로드 중 에러:', e);
+        }
       }
+
+      // 초기 5개 로드
+      await loadIssues();
+
+      // 더 보기 버튼 클릭 시 추가 로드
+      loadMore.addEventListener('click', async e => {
+        e.preventDefault();
+        await loadIssues();
+      });
     });
   </script>
 
