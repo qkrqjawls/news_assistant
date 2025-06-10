@@ -10,7 +10,7 @@
 
   <div id="wrapper">
 
-    <!-- Header -->
+    <!-- Header (editorpage.html에서 복사) -->
     <header id="header">
       <h1><a href="index.html">준혁이는 뉴스 보기 귀찮아!</a></h1>
       <nav class="links">
@@ -27,23 +27,18 @@
           <li class="menu"><a class="fa-bars" href="#menu">Menu</a></li>
         </ul>
       </nav>
-    </header>
+    </header> <!-- :contentReference[oaicite:0]{index=0} -->
 
-    <!-- Menu -->
+    <!-- Menu (editorpage.html에서 복사) -->
     <section id="menu">
       <section>
         <ul class="links" id="menuLinks">
-          <li>
-            <a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a>
-          </li>
-          <li>
-            <a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a>
-          </li>
+          <!-- 로그인 상태에 따라 JS로 채워짐 -->
         </ul>
       </section>
-    </section>
+    </section> <!-- :contentReference[oaicite:1]{index=1} -->
 
-    <!-- Sidebar Intro -->
+    <!-- Sidebar Intro (원본 index.html) -->
     <section id="sidebar">
       <section id="intro">
         <a href="#" class="logo"><img src="images/로고1.png" alt="" /></a>
@@ -52,25 +47,28 @@
           <p>인공지능 프로젝트</p>
         </header>
       </section>
-    </section>
 
-    <!-- Posts List -->
+      <!-- Optional additional sidebar sections… -->
+
+    </section> <!-- :contentReference[oaicite:2]{index=2} -->
+
+    <!-- Posts List (원본 index.html) -->
     <section>
       <ul class="posts" id="postsList">
         <!-- JS로 채워집니다 -->
       </ul>
-    </section>
+    </section> <!-- :contentReference[oaicite:3]{index=3} -->
 
-    <!-- About -->
+    <!-- About (원본 index.html) -->
     <section class="blurb">
       <h2>About</h2>
       <p>사실 이 프로젝트 제목은 준혁이의 허락을 받지 않고 어쩌고 저쩌고~</p>
       <ul class="actions">
         <li><a href="#" class="button">Learn More</a></li>
       </ul>
-    </section>
+    </section> <!-- :contentReference[oaicite:4]{index=4} -->
 
-    <!-- Footer -->
+    <!-- Footer (원본 index.html) -->
     <section id="footer">
       <ul class="icons">
         <li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
@@ -80,18 +78,52 @@
         <li><a href="#" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
       </ul>
       <p class="copyright">&copy; Untitled. Design: <a href="http://html5up.net">HTML5 UP</a>.</p>
-    </section>
+    </section> <!-- :contentReference[oaicite:5]{index=5} -->
 
   </div>
 
-  <!-- 필수 스크립트 -->
+  <!-- 필수 스크립트 (원본 index.html) -->
   <script src="assets/js/jquery.min.js"></script>
   <script src="assets/js/browser.min.js"></script>
   <script src="assets/js/breakpoints.min.js"></script>
   <script src="assets/js/util.js"></script>
-  <script src="assets/js/main.js"></script>
+  <script src="assets/js/main.js"></script> <!-- :contentReference[oaicite:6]{index=6} -->
 
-  <!-- 수정: 중복 검사 추가 -->
+  <!-- 로그인 상태에 따라 메뉴 업데이트 (editorpage.html에서 복사) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const links = document.getElementById('menuLinks');
+      fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/profile', {
+        credentials: 'include'
+      }).then(res => {
+        links.innerHTML = '';
+        if (res.ok) {
+          links.innerHTML += `
+            <li><a href="categories.html"><h3>Categories</h3><p>카테고리 수정</p></a></li>
+            <li><a href="#" id="logout"><h3>Log Out</h3><p>로그아웃</p></a></li>
+          `;
+          document.getElementById('logout').addEventListener('click', async e => {
+            e.preventDefault();
+            await fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/logout', {
+              method: 'POST',
+              credentials: 'include'
+            });
+            window.location.reload();
+          });
+        } else {
+          links.innerHTML += `
+            <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
+            <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
+          `;
+        }
+        links.innerHTML += `
+          <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
+        `;
+      });
+    });
+  </script> <!-- :contentReference[oaicite:7]{index=7} -->
+
+  <!-- 중복검사 · 이미지 로테이션 · 초기 로드 · 무한 스크롤 (원본 index.html) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const API_BASE  = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
@@ -117,10 +149,9 @@
             return;
           }
           issues.forEach(issue => {
-            // 중복 검사: 이미 추가된 항목이 있으면 건너뜀
-            if (postsList.querySelector(`li[data-issue-id="${issue.id}"]`)) {
-              return;
-            }
+            // 중복 검사
+            if (postsList.querySelector(`li[data-issue-id="${issue.id}"]`)) return;
+
             const li = document.createElement('li');
             li.setAttribute('data-issue-id', issue.id);
             li.innerHTML = `
@@ -146,7 +177,8 @@
             postsList.appendChild(li);
 
             // 이미지 로테이션
-            const images = (issue.related_news || []).map(n => n.image_url).filter(u => u);
+            const images = (issue.related_news || [])
+              .map(n => n.image_url).filter(u => u);
             if (images.length) {
               let idx = 0;
               const imgEl = li.querySelector('img.rotator');
@@ -176,7 +208,7 @@
         }
       });
     });
-  </script>
+  </script> <!-- :contentReference[oaicite:8]{index=8} -->
 
 </body>
 </html>
