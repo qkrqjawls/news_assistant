@@ -92,16 +92,16 @@
   <script src="assets/js/util.js"></script>
   <script src="assets/js/main.js"></script>
 
-  <!-- 수정: 무한 스크롤, 로드 수 10개로 변경 -->
+  <!-- 수정: 무한 스크롤, 로드 수 10개로 변경 & 헤더 3줄 표시 -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const API_BASE  = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
       const postsList = document.getElementById('postsList');
 
-      let limit = 10;          // 한 번에 10개 로드
+      let limit = 10;          
       let offset = 0;
-      let loading = false;     // 중복 호출 방지
-      let finished = false;    // 더 이상 로드할 이슈가 없으면 true
+      let loading = false;     
+      let finished = false;    
 
       async function loadIssues() {
         if (loading || finished) return;
@@ -123,8 +123,9 @@
               <article>
                 <header>
                   <h3><a href="single.html?id=${issue.id}">${issue.issue_name}</a></h3>
+                  <p class="related-count">연관 기사: ${issue.related_news.length}개</p>
                   <time class="published" datetime="${issue.date}">
-                    ${new Date(issue.date).toLocaleDateString()}
+                    ${new Date(issue.date).toLocaleString()}
                   </time>
                 </header>
                 <a href="single.html?id=${issue.id}" class="image">
@@ -164,7 +165,7 @@
       // 초기 로드
       loadIssues();
 
-      // 무한 스크롤: 페이지 하단 근처에 도달 시 추가 로드
+      // 무한 스크롤
       window.addEventListener('scroll', () => {
         if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
           loadIssues();
