@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>개발자 페이지 – 이슈 편집</title>
+  <title>개발자 이슈 편집</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <link rel="stylesheet" href="assets/css/main.css" />
@@ -14,9 +14,11 @@
       padding: 1rem 2rem;
       background: #f5f5f5;
     }
-    #header .menu-toggle {
+    #header a#menuToggle {
       font-size: 1.5rem;
       cursor: pointer;
+      text-decoration: none;
+      color: inherit;
     }
     /* 슬라이드 아웃 메뉴 */
     #menu {
@@ -34,6 +36,7 @@
     #menu ul { list-style: none; padding: 0; margin: 0; }
     #menu li { margin-bottom: 1rem; }
     #menu a { text-decoration: none; color: #333; font-size: 1.1rem; }
+
     /* 개발자 프로필 레이아웃 */
     .dev-item {
       display: flex; align-items: center;
@@ -59,14 +62,17 @@
     <!-- Header -->
     <header id="header">
       <h1>개발자 이슈 편집</h1>
-      <div class="menu-toggle" id="menuToggle">&#9776;</div>
+      <!-- 토글 버튼을 a 태그로 변경 -->
+      <a id="menuToggle" class="fa-bars" href="#menu"></a>
     </header>
 
-    <!-- Slide-out Menu -->
+    <!-- Slide-out Menu (index.html 복사) -->
     <section id="menu">
-      <ul id="menuLinks">
-        <!-- JavaScript가 로그인 상태에 따라 여기 채웁니다 -->
-      </ul>
+      <section>
+        <ul class="links" id="menuLinks">
+          <!-- 로그인 상태에 따라 JS에서 채워짐 -->
+        </ul>
+      </section>
     </section>
 
     <!-- 개발자 프로필 리스트 -->
@@ -103,7 +109,9 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const menu = document.getElementById('menu');
-      document.getElementById('menuToggle').addEventListener('click', () => {
+      const toggle = document.getElementById('menuToggle');
+      toggle.addEventListener('click', e => {
+        e.preventDefault();
         menu.classList.toggle('open');
       });
 
@@ -115,7 +123,6 @@
         const links = document.getElementById('menuLinks');
         links.innerHTML = '';
         if (res.ok) {
-          // 로그인 되어 있을 때
           links.innerHTML = `
             <li><a href="categories.html">카테고리 수정</a></li>
             <li><a href="#" id="logoutLink">로그아웃</a></li>
@@ -129,7 +136,6 @@
             window.location.reload();
           });
         } else {
-          // 비로그인 상태
           links.innerHTML = `
             <li><a href="login.html">Log In</a></li>
             <li><a href="signup.html">Sign Up</a></li>
