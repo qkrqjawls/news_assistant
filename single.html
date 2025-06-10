@@ -37,7 +37,6 @@
           <h2><span id="post-title">로딩 중…</span></h2>
         </div>
         <div class="meta">
-          <!-- 수정: toLocaleString() 사용하여 날짜와 시간을 모두 표시 -->
           <time class="published" datetime="" id="post-date">Loading date…</time>
           <a href="#" class="author">
             <span class="name">준혁이</span>
@@ -105,6 +104,15 @@
         titleIndex++;
       }, 500);
 
+      // 날짜 로딩 애니메이션
+      const dateElem = document.getElementById('post-date');
+      const dateStates = ['로딩 중.', '로딩 중..', '로딩 중...'];
+      let dateIndex = 0;
+      const dateInterval = setInterval(() => {
+        dateElem.textContent = dateStates[dateIndex % dateStates.length];
+        dateIndex++;
+      }, 500);
+
       // 요약 콘텐츠 로딩 애니메이션
       const contentEl = document.getElementById('post-content');
       const dotStates = ['로딩 중.', '로딩 중..', '로딩 중...'];
@@ -133,13 +141,12 @@
 
         // 애니메이션 중지
         clearInterval(titleInterval);
+        clearInterval(dateInterval);
         clearInterval(dotInterval);
 
-        // 1) 제목 & 요약기사 렌더링
+        // 1) 제목 & 날짜 & 요약기사 렌더링
         titleEl.textContent = issue.issue_name;
-        const dateElem = document.getElementById('post-date');
         dateElem.setAttribute('datetime', issue.date);
-        // 수정된 부분: 상세 시간까지 포함
         dateElem.textContent = new Date(issue.date).toLocaleString();
         contentEl.textContent = issue.summary;
 
@@ -180,6 +187,7 @@
 
       } catch (e) {
         clearInterval(titleInterval);
+        clearInterval(dateInterval);
         clearInterval(dotInterval);
         clearInterval(relInterval);
         console.error(e);
