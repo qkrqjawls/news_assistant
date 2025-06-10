@@ -1,57 +1,10 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>개발자 페이지 – 이슈 편집</title>
+  <title>준혁이는 뉴스 보기 귀찮아!</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <link rel="stylesheet" href="assets/css/main.css" />
-  <style>
-    /* Slide-out menu */
-    #menu {
-      position: fixed;
-      top: 0; right: -300px;
-      width: 300px; height: 100%;
-      background: #fff;
-      box-shadow: -2px 0 6px rgba(0,0,0,0.2);
-      transition: right 0.3s ease;
-      padding: 2rem;
-      box-sizing: border-box;
-      z-index: 1000;
-    }
-    #menu.open { right: 0; }
-    #menu ul { list-style: none; padding: 0; margin: 0; }
-    #menu li { margin-bottom: 1rem; }
-    #menu a { text-decoration: none; color: #333; font-size: 1.1rem; }
-
-    /* 개발자 프로필 레이아웃 */
-    .dev-item {
-      display: flex;
-      align-items: center;
-      margin: 3rem 2rem;
-    }
-    .dev-item .image {
-      flex: 0 0 150px;
-      margin-right: 1.5rem;
-    }
-    .dev-item .image img {
-      width: 100%;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
-    .dev-item .details {
-      flex: 1;
-    }
-    .dev-item .details h3 {
-      margin: 0 0 0.5rem;
-      font-size: 1.5rem;
-    }
-    .dev-item .details p {
-      margin: 0;
-      color: #555;
-      line-height: 1.6;
-      font-size: 1.1rem;
-    }
-  </style>
 </head>
 <body class="is-preload">
 
@@ -60,7 +13,6 @@
     <!-- Header -->
     <header id="header">
       <h1><a href="index.html">준혁이는 뉴스 보기 귀찮아!</a></h1>
-      <!-- 기존 index.html의 링크 메뉴 -->
       <nav class="links">
         <ul>
           <li><a href="#">Lorem</a></li>
@@ -70,7 +22,6 @@
           <li><a href="#">Adipiscing</a></li>
         </ul>
       </nav>
-      <!-- 기존 index.html의 메인 메뉴 토글 -->
       <nav class="main">
         <ul>
           <li class="menu"><a class="fa-bars" href="#menu">Menu</a></li>
@@ -78,47 +29,53 @@
       </nav>
     </header>
 
-    <!-- Slide-out Menu (복붙) -->
+    <!-- Menu -->
     <section id="menu">
       <section>
         <ul class="links" id="menuLinks">
-          <li>
-            <a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a>
-          </li>
-          <li>
-            <a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a>
-          </li>
+          <!-- 첫 두 항목: 로그인/카테고리수정 또는 Log In/Sign Up -->
+          <!-- 세 번째 항목: 개발자 페이지 (항상) -->
         </ul>
       </section>
     </section>
 
-    <!-- 개발자 프로필 리스트 -->
+    <!-- Sidebar Intro -->
+    <section id="sidebar">
+      <section id="intro">
+        <a href="#" class="logo"><img src="images/로고1.png" alt="" /></a>
+        <header>
+          <h2>준혁이는 뉴스 보기 귀찮아!</h2>
+          <p>인공지능 프로젝트</p>
+        </header>
+      </section>
+    </section>
+
+    <!-- Posts List -->
     <section>
       <ul class="posts" id="postsList">
-        <li class="dev-item">
-          <div class="image">
-            <img src="images/로고1.png" alt="홍길동" />
-          </div>
-          <div class="details">
-            <h3>홍길동</h3>
-            <p>백엔드 개발 및 API 설계 담당</p>
-          </div>
-        </li>
-        <li class="dev-item">
-          <div class="image">
-            <img src="images/로고1.png" alt="김영희" />
-          </div>
-          <div class="details">
-            <h3>김영희</h3>
-            <p>프론트엔드 및 UI/UX 디자인 담당</p>
-          </div>
-        </li>
+        <!-- JS로 최대 2개만 채워집니다 -->
+      </ul>
+    </section>
+
+    <!-- About -->
+    <section class="blurb">
+      <h2>About</h2>
+      <p>사실 이 프로젝트 제목은 준혁이의 허락을 받지 않고 어쩌고 저쩌고~</p>
+      <ul class="actions">
+        <li><a href="#" class="button">Learn More</a></li>
       </ul>
     </section>
 
     <!-- Footer -->
     <section id="footer">
-      <p>&copy; 준혁이는 뉴스 보기 귀찮아! 개발자 페이지</p>
+      <ul class="icons">
+        <li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+        <li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+        <li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+        <li><a href="#" class="icon solid fa-rss"><span class="label">RSS</span></a></li>
+        <li><a href="#" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
+      </ul>
+      <p class="copyright">&copy; Untitled. Design: <a href="http://html5up.net">HTML5 UP</a>.</p>
     </section>
 
   </div>
@@ -130,23 +87,25 @@
   <script src="assets/js/util.js"></script>
   <script src="assets/js/main.js"></script>
 
+  <!-- 메뉴바 토글 및 로그인 상태 처리, + 항상 개발자 페이지 -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 메뉴 토글
+      // 메뉴 슬라이드 토글 (util.js/main.js와 동일하게 동작)
       const menu = document.getElementById('menu');
       document.querySelector('#header .menu a').addEventListener('click', e => {
         e.preventDefault();
         menu.classList.toggle('open');
       });
 
-      // 로그인 상태에 따라 메뉴 구성
+      // 로그인 상태에 따라 첫 두 링크를 구성하고, 세 번째로 개발자 페이지 고정 추가
+      const links = document.getElementById('menuLinks');
       fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/profile', {
         credentials: 'include'
       }).then(res => {
-        const links = document.getElementById('menuLinks');
         links.innerHTML = '';
         if (res.ok) {
-          links.innerHTML = `
+          // 로그인된 사용자
+          links.innerHTML += `
             <li><a href="categories.html"><h3>Categories</h3><p>카테고리 수정</p></a></li>
             <li><a href="#" id="logout"><h3>Log Out</h3><p>로그아웃</p></a></li>
           `;
@@ -159,11 +118,38 @@
             window.location.reload();
           });
         } else {
-          links.innerHTML = `
+          // 비로그인 사용자
+          links.innerHTML += `
             <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
             <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
           `;
         }
+        // 세 번째 링크: 개발자 페이지 (항상)
+        links.innerHTML += `
+          <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
+        `;
+      });
+
+      // PostsList에 2개 테스트 항목 추가
+      const postsList = document.getElementById('postsList');
+      const items = [
+        { img: 'images/로고1.png', text: 'test' },
+        { img: 'images/로고1.png', text: 'test' }
+      ];
+      items.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <article>
+            <a href="#" class="image">
+              <img src="${item.img}" alt="dev" />
+            </a>
+            <header>
+              <h3>${item.text}</h3>
+              <small>test2</small>
+            </header>
+          </article>
+        `;
+        postsList.appendChild(li);
       });
     });
   </script>
