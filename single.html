@@ -123,8 +123,8 @@
         dateElem.textContent = new Date(issue.date).toLocaleDateString();
         document.getElementById('post-content').textContent = issue.summary;
 
-        // 2) 연관기사 렌더링은 별도 타이밍으로 분리
-        setTimeout(() => {
+        // 2) 연관기사 렌더링은 requestAnimationFrame 으로 분리
+        requestAnimationFrame(() => {
           const relatedList = document.getElementById('related-list');
           relatedList.innerHTML = '';
 
@@ -149,7 +149,7 @@
           } else {
             relatedList.innerHTML = '<li>연관 기사가 없습니다.</li>';
           }
-        }, 0);
+        });
 
       } catch (e) {
         console.error('상세 뉴스 로드 중 에러:', e);
