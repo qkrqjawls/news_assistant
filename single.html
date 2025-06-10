@@ -142,7 +142,8 @@
             li.innerHTML = `
               <article class="related-item">
                 <h3>
-                  <a href="single.html?id=${article.article_id}">
+                  <!-- 수정된 부분: link 컬럼으로 이동 -->
+                  <a href="${article.link}" target="_blank" rel="noopener">
                     ${article.title}
                   </a>
                 </h3>
