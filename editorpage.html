@@ -5,6 +5,36 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <link rel="stylesheet" href="assets/css/main.css" />
+  <style>
+    /* 개발자 프로필 레이아웃 */
+    .dev-item {
+      display: flex;
+      align-items: center;
+      margin: 3rem 2rem;
+    }
+    .dev-item .image {
+      flex: 0 0 150px;
+      margin-right: 1.5rem;
+    }
+    .dev-item .image img {
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .dev-item .details {
+      flex: 1;
+    }
+    .dev-item .details h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1.5rem;
+    }
+    .dev-item .details p {
+      margin: 0;
+      color: #555;
+      line-height: 1.6;
+      font-size: 1.1rem;
+    }
+  </style>
 </head>
 <body class="is-preload">
 
@@ -29,35 +59,27 @@
       </nav>
     </header>
 
-    <!-- Menu -->
-    <section id="menu">
-      <section>
-        <ul class="links" id="menuLinks">
-          <li>
-            <a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a>
-          </li>
-          <li>
-            <a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a>
-          </li>
-        </ul>
-      </section>
-    </section>
-
-    <!-- Sidebar Intro -->
-    <section id="sidebar">
-      <section id="intro">
-        <a href="#" class="logo"><img src="images/로고1.png" alt="" /></a>
-        <header>
-          <h2>준혁이는 뉴스 보기 귀찮아!</h2>
-          <p>인공지능 프로젝트</p>
-        </header>
-      </section>
-    </section>
-
     <!-- Posts List -->
     <section>
       <ul class="posts" id="postsList">
-        <!-- JS로 최대 2개만 채워집니다 -->
+        <li class="dev-item">
+          <div class="image">
+            <img src="images/로고1.png" alt="박범진" />
+          </div>
+          <div class="details">
+            <h3>박범진</h3>
+            <p>박범진의 코멘트</p>
+          </div>
+        </li>
+        <li class="dev-item">
+          <div class="image">
+            <img src="images/로고1.png" alt="최윤호" />
+          </div>
+          <div class="details">
+            <h3>최윤호</h3>
+            <p>최윤호의 코멘트</p>
+          </div>
+        </li>
       </ul>
     </section>
 
@@ -83,68 +105,6 @@
     </section>
 
   </div>
-
-  <!-- 필수 스크립트 -->
-  <script src="assets/js/jquery.min.js"></script>
-  <script src="assets/js/browser.min.js"></script>
-  <script src="assets/js/breakpoints.min.js"></script>
-  <script src="assets/js/util.js"></script>
-  <script src="assets/js/main.js"></script>
-
-  <!-- 수정: 최대 2개만 로드하고 스크롤 제거 -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const API_BASE  = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
-      const postsList = document.getElementById('postsList');
-
-      const limit = 2;  // 최대 2개
-      const offset = 0; // 처음부터
-      let loading = false;
-
-      async function loadIssues() {
-        if (loading) return;
-        loading = true;
-        try {
-          const resp = await fetch(
-            `${API_BASE}/api/issues?limit=${limit}&offset=${offset}`,
-            { credentials: 'include' }
-          );
-          if (!resp.ok) throw new Error(resp.statusText);
-          const issues = await resp.json();
-          issues.slice(0, limit).forEach(issue => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-              <article>
-                <header>
-                  <h3><a href="single.html?id=${issue.id}">${issue.issue_name}</a></h3>
-                  <p class="related-count">연관 기사: ${issue.related_news.length}개</p>
-                  <time class="published" datetime="${issue.date}">
-                    ${new Date(issue.date).toLocaleString()}
-                  </time>
-                </header>
-                <a href="single.html?id=${issue.id}" class="image">
-                  <img
-                    src="images/noimage.jpg"
-                    onerror="this.src='images/noimage.jpg'"
-                    alt="관련 기사 이미지"
-                    width="200" height="150"
-                  />
-                </a>
-              </article>
-            `;
-            postsList.appendChild(li);
-          });
-        } catch (e) {
-          console.error('이슈 로드 중 에러:', e);
-        } finally {
-          loading = false;
-        }
-      }
-
-      // 단 한 번 로드
-      loadIssues();
-    });
-  </script>
 
 </body>
 </html>
