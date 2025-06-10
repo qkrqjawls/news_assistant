@@ -148,19 +148,28 @@
                 </time>
               </header>
               <a href="single.html?id=${issue.id}" class="image">
-                <img class="rotator" src="images/noimage.jpg" alt="관련 기사 이미지" width="200" height="150" />
+                <!-- 기본 이미지를 noimage.jpg로 설정하고, 에러 시에도 fallback -->
+                <img
+                  class="rotator"
+                  src="images/noimage.jpg"
+                  onerror="this.src='images/noimage.jpg'"
+                  alt="관련 기사 이미지"
+                  width="200" height="150"
+                />
               </a>
             </article>
           `;
           postsList.appendChild(li);
 
-          // 이미지 URL만 골라서 5초마다 변경, 없으면 noimage.jpg 유지
+          // 관련 뉴스에서 image_url만 골라 5초마다 로테이션, 없으면 noimage 유지
           const images = (issue.related_news || [])
             .map(n => n.image_url)
             .filter(url => url);
+
           if (images.length > 0) {
             let idx = 0;
             const imgEl = li.querySelector('img.rotator');
+            imgEl.onerror = () => { imgEl.src = 'images/noimage.jpg'; };
             imgEl.src = images[0];
             setInterval(() => {
               idx = (idx + 1) % images.length;
