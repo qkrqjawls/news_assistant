@@ -33,8 +33,7 @@
     <section id="menu">
       <section>
         <ul class="links" id="menuLinks">
-          <!-- 첫 두 항목: 로그인/카테고리수정 또는 Log In/Sign Up -->
-          <!-- 세 번째 항목: 개발자 페이지 (항상) -->
+          <!-- JS로 로그인 상태에 따라 채워집니다 -->
         </ul>
       </section>
     </section>
@@ -87,24 +86,20 @@
   <script src="assets/js/util.js"></script>
   <script src="assets/js/main.js"></script>
 
-  <!-- 메뉴바 토글 및 로그인 상태 처리, + 항상 개발자 페이지 -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 메뉴 슬라이드 토글 (util.js/main.js와 동일하게 동작)
       const menu = document.getElementById('menu');
       document.querySelector('#header .menu a').addEventListener('click', e => {
         e.preventDefault();
         menu.classList.toggle('open');
       });
 
-      // 로그인 상태에 따라 첫 두 링크를 구성하고, 세 번째로 개발자 페이지 고정 추가
       const links = document.getElementById('menuLinks');
       fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/profile', {
         credentials: 'include'
       }).then(res => {
         links.innerHTML = '';
         if (res.ok) {
-          // 로그인된 사용자
           links.innerHTML += `
             <li><a href="categories.html"><h3>Categories</h3><p>카테고리 수정</p></a></li>
             <li><a href="#" id="logout"><h3>Log Out</h3><p>로그아웃</p></a></li>
@@ -118,13 +113,11 @@
             window.location.reload();
           });
         } else {
-          // 비로그인 사용자
           links.innerHTML += `
             <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
             <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
           `;
         }
-        // 세 번째 링크: 개발자 페이지 (항상)
         links.innerHTML += `
           <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
         `;
