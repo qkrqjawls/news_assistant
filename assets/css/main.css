@@ -3626,6 +3626,27 @@ input, select, textarea {
   text-align: left !important;
 }
 
+/* rotator-container: 이미지 겹치기 + 페이드 트랜지션 */
+.rotator-container {
+  position: relative;
+  width: 200px;   /* 기존 img width */
+  height: 150px;  /* 기존 img height */
+  overflow: hidden;
+}
+
+.rotator-container img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.rotator-container img.active {
+  opacity: 1;
+}
 
 
 
