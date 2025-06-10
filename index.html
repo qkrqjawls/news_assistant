@@ -106,9 +106,7 @@
 
       // 1) 로그인 상태 확인 & 메뉴 렌더링
       try {
-        const profileRes = await fetch(`${API_BASE}/profile`, {
-          credentials: 'include'
-        });
+        const profileRes = await fetch(`${API_BASE}/profile`, { credentials: 'include' });
         if (profileRes.ok) {
           const { username } = await profileRes.json();
           links.innerHTML = `
@@ -118,10 +116,7 @@
           `;
           document.getElementById('logoutLink').addEventListener('click', async e => {
             e.preventDefault();
-            await fetch(`${API_BASE}/logout`, {
-              method: 'POST',
-              credentials: 'include'
-            });
+            await fetch(`${API_BASE}/logout`, { method: 'POST', credentials: 'include' });
             window.location.reload();
           });
         } else {
@@ -134,12 +129,9 @@
         console.error('로그인 상태 확인 중 에러:', e);
       }
 
-      // 2) 이슈 목록 로드 & 렌더링
+      // 2) 이슈 목록 로드 & 렌더링 (이미지 회전 기능 포함)
       try {
-        const resp = await fetch(
-          `${API_BASE}/api/issues?limit=5&offset=0`,
-          { credentials: 'include' }
-        );
+        const resp = await fetch(`${API_BASE}/api/issues?limit=5&offset=0`, { credentials: 'include' });
         if (!resp.ok) throw new Error(resp.statusText);
         const issues = await resp.json();
 
@@ -158,11 +150,26 @@
                 </time>
               </header>
               <a href="single.html?id=${issue.id}" class="image">
-                <img src="images/pic08.jpg" alt="" />
+                <!-- rotator 클래스 추가 -->
+                <img class="rotator" src="" alt="관련 기사 이미지" width="200" height="150" />
               </a>
             </article>
           `;
           postsList.appendChild(li);
+
+          // 관련 뉴스에서 image_url만 골라 5초마다 로테이션
+          const images = (issue.related_news || [])
+            .map(n => n.image_url)
+            .filter(url => url);
+          if (images.length) {
+            let idx = 0;
+            const imgEl = li.querySelector('img.rotator');
+            imgEl.src = images[0];
+            setInterval(() => {
+              idx = (idx + 1) % images.length;
+              imgEl.src = images[idx];
+            }, 5000);
+          }
         });
       } catch (e) {
         console.error('이슈 로드 중 에러:', e);
