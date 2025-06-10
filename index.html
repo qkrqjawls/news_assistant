@@ -33,7 +33,7 @@
     <section id="menu">
       <section>
         <ul class="links" id="menuLinks">
-          <!-- JS로 로그인 상태에 따라 채워집니다 -->
+          <!-- JS populates: Log In/Sign Up or Categories/Log Out, then Developer Page -->
         </ul>
       </section>
     </section>
@@ -52,7 +52,7 @@
     <!-- Posts List -->
     <section>
       <ul class="posts" id="postsList">
-        <!-- JS로 최대 2개만 채워집니다 -->
+        <!-- 이슈 리스트 -->
       </ul>
     </section>
 
@@ -86,20 +86,23 @@
   <script src="assets/js/util.js"></script>
   <script src="assets/js/main.js"></script>
 
+  <!-- 메뉴 동작 및 동적 링크 -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const menu = document.getElementById('menu');
+      // 슬라이드 메뉴 토글 (util.js/main.js와 동일하게 작동)
       document.querySelector('#header .menu a').addEventListener('click', e => {
         e.preventDefault();
-        menu.classList.toggle('open');
+        document.body.classList.toggle('is-menu-visible');
       });
 
+      // 로그인 상태 확인 후 메뉴 링크 구성
       const links = document.getElementById('menuLinks');
       fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/profile', {
         credentials: 'include'
       }).then(res => {
         links.innerHTML = '';
         if (res.ok) {
+          // 로그인된 사용자
           links.innerHTML += `
             <li><a href="categories.html"><h3>Categories</h3><p>카테고리 수정</p></a></li>
             <li><a href="#" id="logout"><h3>Log Out</h3><p>로그아웃</p></a></li>
@@ -113,36 +116,16 @@
             window.location.reload();
           });
         } else {
+          // 비로그인 사용자
           links.innerHTML += `
             <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
             <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
           `;
         }
+        // 3번 위치: 항상 표시되는 개발자 페이지
         links.innerHTML += `
           <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
         `;
-      });
-
-      // PostsList에 2개 테스트 항목 추가
-      const postsList = document.getElementById('postsList');
-      const items = [
-        { img: 'images/로고1.png', text: 'test' },
-        { img: 'images/로고1.png', text: 'test' }
-      ];
-      items.forEach(item => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <article>
-            <a href="#" class="image">
-              <img src="${item.img}" alt="dev" />
-            </a>
-            <header>
-              <h3>${item.text}</h3>
-              <small>test2</small>
-            </header>
-          </article>
-        `;
-        postsList.appendChild(li);
       });
     });
   </script>
