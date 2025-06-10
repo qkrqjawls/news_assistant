@@ -95,6 +95,15 @@
 
       const API = 'https://news-assistant-app-public-1052035590147.us-central1.run.app/api/issues?limit=100&offset=0';
 
+      // 제목 로딩 애니메이션
+      const titleEl = document.getElementById('post-title');
+      const titleStates = ['로딩 중.', '로딩 중..', '로딩 중...'];
+      let titleIndex = 0;
+      const titleInterval = setInterval(() => {
+        titleEl.textContent = titleStates[titleIndex % titleStates.length];
+        titleIndex++;
+      }, 500);
+
       // 요약 콘텐츠 로딩 애니메이션
       const contentEl = document.getElementById('post-content');
       const dotStates = ['로딩 중.', '로딩 중..', '로딩 중...'];
@@ -114,24 +123,25 @@
       }, 500);
 
       try {
-        // 1) 전체 데이터를 가져오되, 연관기사 처리는 뒤로 미룸
+        // 데이터 fetch
         const resp = await fetch(API);
         if (!resp.ok) throw new Error(resp.statusText);
         const issues = await resp.json();
         const issue = issues.find(i => String(i.id) === issueId);
         if (!issue) throw new Error('Not Found');
 
-        // 로딩 애니메이션 중지
+        // 애니메이션 중지
+        clearInterval(titleInterval);
         clearInterval(dotInterval);
 
-        // 2) 요약기사 렌더링
-        document.getElementById('post-title').textContent = issue.issue_name;
+        // 1) 제목 & 요약기사 렌더링
+        titleEl.textContent = issue.issue_name;
         const dateElem = document.getElementById('post-date');
         dateElem.setAttribute('datetime', issue.date);
         dateElem.textContent = new Date(issue.date).toLocaleDateString();
         contentEl.textContent = issue.summary;
 
-        // 3) 요약 보여진 다음에 연관기사 데이터 렌더
+        // 2) 연관기사 fetch & 렌더
         requestAnimationFrame(() => {
           fetch(API)
             .then(r => r.json())
@@ -167,10 +177,11 @@
         });
 
       } catch (e) {
+        clearInterval(titleInterval);
         clearInterval(dotInterval);
         clearInterval(relInterval);
         console.error(e);
-        document.getElementById('post-title').textContent = '상세 뉴스를 불러오는 중 오류가 발생했습니다.';
+        titleEl.textContent = '상세 뉴스를 불러오는 중 오류가 발생했습니다.';
         contentEl.textContent = e.message;
       }
     });
