@@ -97,11 +97,49 @@
   <script src="assets/js/util.js"></script>
   <script src="assets/js/main.js"></script>
 
+  <!-- 동적 메뉴, 인증 체크, 이슈 로드 -->
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
+      const API_BASE  = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
+      const links     = document.getElementById('menuLinks');
       const postsList = document.getElementById('postsList');
+
+      // 1) 로그인 상태 확인 & 메뉴 렌더링
       try {
-        const resp = await fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/api/issues?limit=5&offset=0');
+        const profileRes = await fetch(`${API_BASE}/profile`, {
+          credentials: 'include'
+        });
+        if (profileRes.ok) {
+          const { username } = await profileRes.json();
+          links.innerHTML = `
+            <li class="greeting">안녕하세요 ${username}님</li>
+            <li><a href="editinfo.html"><h3>카테고리 수정</h3><p>내 뉴스 카테고리</p></a></li>
+            <li><a href="#" id="logoutLink"><h3>Logout</h3><p>로그아웃</p></a></li>
+          `;
+          document.getElementById('logoutLink').addEventListener('click', async e => {
+            e.preventDefault();
+            await fetch(`${API_BASE}/logout`, {
+              method: 'POST',
+              credentials: 'include'
+            });
+            window.location.reload();
+          });
+        } else {
+          links.innerHTML = `
+            <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
+            <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
+          `;
+        }
+      } catch (e) {
+        console.error('로그인 상태 확인 중 에러:', e);
+      }
+
+      // 2) 이슈 목록 로드 & 렌더링
+      try {
+        const resp = await fetch(
+          `${API_BASE}/api/issues?limit=5&offset=0`,
+          { credentials: 'include' }
+        );
         if (!resp.ok) throw new Error(resp.statusText);
         const issues = await resp.json();
 
@@ -110,7 +148,11 @@
           li.innerHTML = `
             <article>
               <header>
-                <h3><a href="single.html?id=${issue.id}">${issue.issue_name}</a></h3>
+                <h3>
+                  <a href="single.html?id=${issue.id}">
+                    ${issue.issue_name}
+                  </a>
+                </h3>
                 <time class="published" datetime="${issue.date}">
                   ${new Date(issue.date).toLocaleDateString()}
                 </time>
