@@ -95,6 +95,15 @@
 
       const API = 'https://news-assistant-app-public-1052035590147.us-central1.run.app/api/issues?limit=100&offset=0';
 
+      // 로딩 애니메이션: '.', '..', '...' 순환
+      const contentEl = document.getElementById('post-content');
+      const dotStates = ['로딩 중.', '로딩 중..', '로딩 중...'];
+      let dotIndex = 0;
+      const dotInterval = setInterval(() => {
+        contentEl.textContent = dotStates[dotIndex % dotStates.length];
+        dotIndex++;
+      }, 500);
+
       try {
         // 1) 전체 데이터를 가져오되, 연관기사 처리는 뒤로 미룸
         const resp = await fetch(API);
@@ -103,12 +112,15 @@
         const issue = issues.find(i => String(i.id) === issueId);
         if (!issue) throw new Error('Not Found');
 
+        // 로딩 애니메이션 중지
+        clearInterval(dotInterval);
+
         // 2) 바로 요약기사 렌더링
         document.getElementById('post-title').textContent = issue.issue_name;
         const dateElem = document.getElementById('post-date');
         dateElem.setAttribute('datetime', issue.date);
         dateElem.textContent = new Date(issue.date).toLocaleDateString();
-        document.getElementById('post-content').textContent = issue.summary;
+        contentEl.textContent = issue.summary;
 
         // 3) 요약 보여진 다음에 연관기사 데이터 fetch & 렌더
         requestAnimationFrame(() => {
@@ -145,9 +157,10 @@
         });
 
       } catch (e) {
+        clearInterval(dotInterval);
         console.error(e);
         document.getElementById('post-title').textContent = '상세 뉴스를 불러오는 중 오류가 발생했습니다.';
-        document.getElementById('post-content').textContent = e.message;
+        contentEl.textContent = e.message;
       }
     });
   </script>
