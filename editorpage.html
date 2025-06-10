@@ -6,34 +6,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <link rel="stylesheet" href="assets/css/main.css" />
   <style>
+    /* Header & 메뉴 */
+    #header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: #f5f5f5;
+    }
+    #header nav.links ul,
+    #header nav.main ul {
+      display: flex;
+      gap: 1rem;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    #header nav.links a,
+    #header nav.main a {
+      text-decoration: none;
+      color: inherit;
+    }
+
     /* 개발자 프로필 레이아웃 */
     .dev-item {
-      display: flex;
-      align-items: center;
+      display: flex; align-items: center;
       margin: 3rem 2rem;
     }
     .dev-item .image {
-      flex: 0 0 150px;
-      margin-right: 1.5rem;
+      flex: 0 0 150px; margin-right: 1.5rem;
     }
     .dev-item .image img {
-      width: 100%;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      width: 100%; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
     .dev-item .details {
       flex: 1;
     }
-    .dev-item .details h3 {
-      margin: 0 0 0.5rem;
-      font-size: 1.5rem;
-    }
-    .dev-item .details p {
-      margin: 0;
-      color: #555;
-      line-height: 1.6;
-      font-size: 1.1rem;
-    }
+    .dev-item .details h3 { margin: 0 0 0.5rem; font-size: 1.5rem; }
+    .dev-item .details p { margin: 0; color: #555; line-height: 1.6; font-size: 1.1rem; }
   </style>
 </head>
 <body class="is-preload">
@@ -58,6 +68,16 @@
         </ul>
       </nav>
     </header>
+
+    <!-- Menu -->
+    <section id="menu">
+      <section>
+        <ul class="links" id="menuLinks">
+          <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
+          <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
+        </ul>
+      </section>
+    </section>
 
     <!-- Posts List -->
     <section>
@@ -101,7 +121,7 @@
         <li><a href="#" class="icon solid fa-rss"><span class="label">RSS</span></a></li>
         <li><a href="#" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
       </ul>
-      <p class="copyright">&copy; Untitled. Design: <a href="http://html5up.net">HTML5 UP</a>.</p>
+      <p class="copyright">&copy; 준혁이는 뉴스 보기 귀찮아!</p>
     </section>
 
   </div>
