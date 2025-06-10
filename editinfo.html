@@ -118,13 +118,14 @@
   <!-- 메뉴 토글 및 폼 처리 스크립트 -->
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
+      const API_BASE  = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
       const API_CATS   = '/api/user/categories';
       const headerLinks= document.querySelector('nav.links ul#menuLinks');
       const slideLinks = document.querySelector('#menu .links#menuLinks');
       const actionBtn  = document.getElementById('menuAction');
 
       // 1) 로그인 확인 via cookie-authenticated /profile
-      const profRes = await fetch('/profile', { credentials: 'include' });
+      const profRes = await fetch(API_BASE+'/profile', { credentials: 'include' });
       if (!profRes.ok) {
         alert('로그인이 필요합니다.');
         window.location.href = 'login.html';
@@ -144,14 +145,14 @@
 
       document.getElementById('logoutLink').addEventListener('click', async e => {
         e.preventDefault();
-        await fetch('/logout', { method: 'POST', credentials: 'include' });
+        await fetch(API_BASE + '/logout', { method: 'POST', credentials: 'include' });
         window.location.href = 'login.html';
       });
 
       // 3) 카테고리 GET
       let categories = [];
       try {
-        const res = await fetch(API_CATS, { credentials: 'include' });
+        const res = await fetch(API+BASE + API_CATS, { credentials: 'include' });
         if (!res.ok) throw new Error(`status ${res.status}`);
         ({ categories } = await res.json());
       } catch (err) {
@@ -172,7 +173,7 @@
           document.querySelectorAll('input[name="categories[]"]:checked')
         ).map(cb => cb.value);
 
-        const saveRes = await fetch(API_CATS, {
+        const saveRes = await fetch(API_BASE + API_CATS, {
           method: 'PUT',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
