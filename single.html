@@ -37,6 +37,7 @@
           <h2><span id="post-title">로딩 중…</span></h2>
         </div>
         <div class="meta">
+          <!-- 수정: toLocaleString() 사용하여 날짜와 시간을 모두 표시 -->
           <time class="published" datetime="" id="post-date">Loading date…</time>
           <a href="#" class="author">
             <span class="name">준혁이</span>
@@ -138,7 +139,8 @@
         titleEl.textContent = issue.issue_name;
         const dateElem = document.getElementById('post-date');
         dateElem.setAttribute('datetime', issue.date);
-        dateElem.textContent = new Date(issue.date).toLocaleDateString();
+        // 수정된 부분: 상세 시간까지 포함
+        dateElem.textContent = new Date(issue.date).toLocaleString();
         contentEl.textContent = issue.summary;
 
         // 2) 연관기사 fetch & 렌더
