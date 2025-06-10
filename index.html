@@ -59,7 +59,6 @@
       <ul class="posts" id="postsList">
         <!-- JS로 채워집니다 -->
       </ul>
-      <!-- 더 보기 버튼 삭제 -->
     </section>
 
     <!-- About -->
@@ -92,16 +91,16 @@
   <script src="assets/js/util.js"></script>
   <script src="assets/js/main.js"></script>
 
-  <!-- 수정: 무한 스크롤, 로드 수 10개로 변경 & 헤더 3줄 표시 -->
+  <!-- 수정: 중복 검사 추가 -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const API_BASE  = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
       const postsList = document.getElementById('postsList');
 
-      let limit = 10;          
+      let limit = 10;
       let offset = 0;
-      let loading = false;     
-      let finished = false;    
+      let loading = false;
+      let finished = false;
 
       async function loadIssues() {
         if (loading || finished) return;
@@ -118,7 +117,12 @@
             return;
           }
           issues.forEach(issue => {
+            // 중복 검사: 이미 추가된 항목이 있으면 건너뜀
+            if (postsList.querySelector(`li[data-issue-id="${issue.id}"]`)) {
+              return;
+            }
             const li = document.createElement('li');
+            li.setAttribute('data-issue-id', issue.id);
             li.innerHTML = `
               <article>
                 <header>
