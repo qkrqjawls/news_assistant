@@ -160,10 +160,10 @@
               }, 5000);
             }
 
-            const anchor = li.getElementById(`issue ${issue.id}`)
+            const anchor = document.getElementById(`issue ${issue.id}`)
             anchor.addEventListener('click', async () => {
               const resp = await fetch(`${API_BASE}/click-event`, {
-                method: 'POST', // HTTP 메소드
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -175,6 +175,7 @@
               if (!resp.ok) throw new Error(resp.statusText);
             })
           });
+          offset += limit;
         } catch (e) {
           console.error('클릭 이벤트 전달 중 에러:', e);
         }
