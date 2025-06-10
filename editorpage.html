@@ -5,46 +5,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <link rel="stylesheet" href="assets/css/main.css" />
-  <style>
-    /* Header & 메뉴 */
-    #header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      background: #f5f5f5;
-    }
-    #header nav.links ul,
-    #header nav.main ul {
-      display: flex;
-      gap: 1rem;
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    #header nav.links a,
-    #header nav.main a {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    /* 개발자 프로필 레이아웃 */
-    .dev-item {
-      display: flex; align-items: center;
-      margin: 3rem 2rem;
-    }
-    .dev-item .image {
-      flex: 0 0 150px; margin-right: 1.5rem;
-    }
-    .dev-item .image img {
-      width: 100%; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
-    .dev-item .details {
-      flex: 1;
-    }
-    .dev-item .details h3 { margin: 0 0 0.5rem; font-size: 1.5rem; }
-    .dev-item .details p { margin: 0; color: #555; line-height: 1.6; font-size: 1.1rem; }
-  </style>
 </head>
 <body class="is-preload">
 
@@ -73,8 +33,7 @@
     <section id="menu">
       <section>
         <ul class="links" id="menuLinks">
-          <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
-          <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
+          <!-- 로그인 상태에 따라 JS로 교체됩니다 -->
         </ul>
       </section>
     </section>
@@ -82,24 +41,7 @@
     <!-- Posts List -->
     <section>
       <ul class="posts" id="postsList">
-        <li class="dev-item">
-          <div class="image">
-            <img src="images/로고1.png" alt="박범진" />
-          </div>
-          <div class="details">
-            <h3>박범진</h3>
-            <p>박범진의 코멘트</p>
-          </div>
-        </li>
-        <li class="dev-item">
-          <div class="image">
-            <img src="images/로고1.png" alt="최윤호" />
-          </div>
-          <div class="details">
-            <h3>최윤호</h3>
-            <p>최윤호의 코멘트</p>
-          </div>
-        </li>
+        <!-- JS로 채워집니다 -->
       </ul>
     </section>
 
@@ -121,10 +63,76 @@
         <li><a href="#" class="icon solid fa-rss"><span class="label">RSS</span></a></li>
         <li><a href="#" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
       </ul>
-      <p class="copyright">&copy; 준혁이는 뉴스 보기 귀찮아!</p>
+      <p class="copyright">&copy; Untitled. Design: <a href="http://html5up.net">HTML5 UP</a>.</p>
     </section>
 
   </div>
+
+  <!-- 필수 스크립트 -->
+  <script src="assets/js/jquery.min.js"></script>
+  <script src="assets/js/browser.min.js"></script>
+  <script src="assets/js/breakpoints.min.js"></script>
+  <script src="assets/js/util.js"></script>
+  <script src="assets/js/main.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1) 메뉴 토글
+      const menu = document.getElementById('menu');
+      document.querySelector('#header .menu a').addEventListener('click', e => {
+        e.preventDefault();
+        menu.classList.toggle('open');
+      });
+
+      // 2) 메뉴 링크 동적 구성
+      fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/profile', {
+        credentials: 'include'
+      }).then(res => {
+        const links = document.getElementById('menuLinks');
+        links.innerHTML = '';
+        if (res.ok) {
+          links.innerHTML = `
+            <li><a href="categories.html"><h3>Categories</h3><p>카테고리 수정</p></a></li>
+            <li><a href="#" id="logout"><h3>Log Out</h3><p>로그아웃</p></a></li>
+          `;
+          document.getElementById('logout').addEventListener('click', async e => {
+            e.preventDefault();
+            await fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/logout', {
+              method: 'POST',
+              credentials: 'include'
+            });
+            window.location.reload();
+          });
+        } else {
+          links.innerHTML = `
+            <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
+            <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
+          `;
+        }
+      });
+
+      // 3) PostsList에 두 개의 테스트 항목 추가
+      const postsList = document.getElementById('postsList');
+      const items = [
+        { img: 'images/로고1.png', text: 'test' },
+        { img: 'images/로고1.png', text: 'test' }
+      ];
+      items.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <article>
+            <a href="#" class="image">
+              <img src="${item.img}" alt="dev" />
+            </a>
+            <header>
+              <h3>${item.text}</h3>
+            </header>
+          </article>
+        `;
+        postsList.appendChild(li);
+      });
+    });
+  </script>
 
 </body>
 </html>
