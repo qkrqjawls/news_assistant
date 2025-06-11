@@ -164,13 +164,13 @@
             li.innerHTML = `
               <article>
                 <header>
-                  <h3><a href="single.html?id=${issue.id}">${issue.issue_name}</a></h3>
+                  <h3><a class="issue-${issue.id}" href="single.html?id=${issue.id}">${issue.issue_name}</a></h3>
                   <p class="related-count">연관 기사: ${issue.related_news.length}개</p>
                   <time class="published" datetime="${issue.date}">
                     ${new Date(issue.date).toLocaleString()}
                   </time>
                 </header>
-                <a href="single.html?id=${issue.id}" class="image">
+                <a class="issue-${issue.id} image" href="single.html?id=${issue.id}">
                   <img
                     class="rotator"
                     src="images/noimage.jpg"
@@ -196,6 +196,23 @@
                 imgEl.src = images[idx];
               }, 5000);
             }
+
+            // 클릭 이벤트 전달. 절-대 지우지 말기
+            li.querySelectorAll(`.issue-${issue.id}`).forEach(x => {
+              x.addEventListener('click', async e => {
+                const resp = await fetch(`${API_BASE}/click-event`, {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    "issue_id" : issue.id
+                  }),
+                  credentials: 'include'
+                });
+                if (!resp.ok) throw new Error(resp.statusText);
+              });
+            });
           });
           offset += limit;
         } catch (e) {
