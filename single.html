@@ -92,39 +92,79 @@
   <script src="assets/js/util.js"></script>
   <script src="assets/js/main.js"></script>
 
-  <!-- 로그인 상태에 따라 메뉴 업데이트 (editorpage.html에서 복사) -->
+  <!-- 로그인 상태에 따라 메뉴 업데이트 (index.html과 동일한 로직) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const links = document.getElementById('menuLinks');
+
       fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/profile', {
         credentials: 'include'
-      }).then(res => {
+      })
+      .then(async res => {
         links.innerHTML = '';
+
         if (res.ok) {
-          links.innerHTML += `
-            <li><a href="editinfo.html"><h3>Categories</h3><p>카테고리 수정</p></a></li>
-            <li><a href="#" id="logout"><h3>Log Out</h3><p>로그아웃</p></a></li>
-          `;
-          document.getElementById('logout').addEventListener('click', async e => {
+          // 로그인된 경우: 프로필 정보 파싱
+          const profile = await res.json();
+
+          // 1) 인사 문구
+          const liGreeting = document.createElement('li');
+          liGreeting.classList.add('greeting');
+          liGreeting.innerHTML = `<h3>안녕하세요. ${profile.id}님</h3>`;
+          links.appendChild(liGreeting);
+
+          // 2) Categories
+          const liCat = document.createElement('li');
+          liCat.innerHTML = `<a href="editinfo.html"><h3>Categories</h3><p>카테고리 수정</p></a>`;
+          links.appendChild(liCat);
+
+          // 3) Log Out
+          const liLogout = document.createElement('li');
+          liLogout.id = 'logout';
+          liLogout.innerHTML = `<a href="#"><h3>Log Out</h3><p>로그아웃</p></a>`;
+          links.appendChild(liLogout);
+
+          // 4) Developer Page
+          const liDev = document.createElement('li');
+          liDev.innerHTML = `<a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a>`;
+          links.appendChild(liDev);
+
+          // 로그아웃 이벤트 핸들러
+          liLogout.addEventListener('click', async e => {
             e.preventDefault();
-            await fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/logout', {
-              method: 'POST',
-              credentials: 'include'
-            });
-            window.location.reload();
+            try {
+              const resp = await fetch(
+                'https://news-assistant-app-public-1052035590147.us-central1.run.app/logout',
+                { method: 'POST', credentials: 'include' }
+              );
+              if (!resp.ok) throw new Error(resp.statusText);
+              // 로그아웃 후 메뉴를 비로그인 상태로 다시 그려 줌
+              links.innerHTML = `
+                <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
+                <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
+                <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
+              `;
+            } catch (err) {
+              console.error('로그아웃 실패:', err);
+              alert('로그아웃 중 오류가 발생했습니다.');
+            }
           });
+
         } else {
-          links.innerHTML += `
+          // 비로그인 상태
+          links.innerHTML = `
             <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
             <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
+            <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
           `;
         }
-        links.innerHTML += `
-          <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
-        `;
+      })
+      .catch(err => {
+        console.error('프로필 로드 실패:', err);
       });
     });
-  </script> <!-- :contentReference[oaicite:2]{index=2} -->
+  </script>
+
 
   <!-- 이슈 상세 로딩 스크립트 (기존 single.html) -->
   <script>
