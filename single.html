@@ -106,7 +106,7 @@
         const { username } = await profileRes.json();
 
         links.innerHTML = `
-          <li class="greeting"><h3>안녕하세요. ${username}님</h3></li>
+          <li class="greeting">안녕하세요. ${username}님</li>
           <li><a href="editinfo.html"><h3>카테고리 수정</h3><p>내 뉴스 카테고리</p></a></li>
           <li><a href="#" id="logoutLink"><h3>Log Out</h3><p>로그아웃</p></a></li>
           <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
