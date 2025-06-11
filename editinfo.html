@@ -115,77 +115,91 @@
 
   </div>
 
+  <!-- 로그인 상태에 따라 메뉴 업데이트 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const API_BASE = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
+      const headerLinks = document.querySelector('header nav.links ul#menuLinks');
+      const slideLinks  = document.querySelector('section#menu ul#menuLinks');
+
+      headerLinks.innerHTML = '';
+      slideLinks.innerHTML  = '';
+
+      try {
+        const profileRes = await fetch(`${API_BASE}/profile`, { credentials: 'include' });
+        if (profileRes.ok) {
+          const { username } = await profileRes.json();
+          const items = `
+            <li class="greeting">안녕하세요. ${username}님</li>
+            <li><a href="editinfo.html"><h3>카테고리 수정</h3><p>내 뉴스 카테고리</p></a></li>
+            <li><a href="#" id="logoutLink"><h3>Logout</h3><p>로그아웃</p></a></li>
+            <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
+          `;
+          headerLinks.innerHTML = items;
+          slideLinks.innerHTML  = items;
+
+          document.getElementById('logoutLink').addEventListener('click', async e => {
+            e.preventDefault();
+            await fetch(`${API_BASE}/logout`, { method: 'POST', credentials: 'include' });
+            window.location.reload();
+          });
+        } else {
+          const items = `
+            <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
+            <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
+            <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
+          `;
+          headerLinks.innerHTML = items;
+          slideLinks.innerHTML  = items;
+        }
+      } catch (e) {
+        console.error('로그인 상태 확인 중 에러:', e);
+      }
+    });
+  </script> <!-- :contentReference[oaicite:0]{index=0} -->
+
   <!-- 메뉴 토글 및 폼 처리 스크립트 -->
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
-      const API_BASE  = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
-      const API_CATS   = '/api/user/categories';
-      const headerLinks= document.querySelector('nav.links ul#menuLinks');
-      const slideLinks = document.querySelector('#menu .links#menuLinks');
-      const actionBtn  = document.getElementById('menuAction');
+      const API_BASE = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
+      const API_CATS = '/api/user/categories';
+      const form = document.getElementById('editForm');
 
-      // 1) 로그인 확인 via cookie-authenticated /profile
-      const profRes = await fetch(API_BASE+'/profile', { credentials: 'include' });
-      if (!profRes.ok) {
-        alert('로그인이 필요합니다.');
-        window.location.href = 'login.html';
-        return;
-      }
-      const { username } = await profRes.json();
-
-      // 2) 메뉴 랜더링
-      const items = `
-        <li class="greeting">안녕하세요 ${username}님</li>
-        <li><a href="editinfo.html"><h3>카테고리 수정</h3><p>내 뉴스 카테고리</p></a></li>
-        <li><a href="#" id="logoutLink"><h3>Logout</h3><p>로그아웃</p></a></li>
-      `;
-      headerLinks.innerHTML = items;
-      slideLinks.innerHTML  = items;
-      if (actionBtn) actionBtn.style.display = 'none';
-
-      document.getElementById('logoutLink').addEventListener('click', async e => {
-        e.preventDefault();
-        await fetch(API_BASE + '/logout', { method: 'POST', credentials: 'include' });
-        window.location.href = 'login.html';
-      });
-
-      // 3) 카테고리 GET
-      let categories = [];
+      // 카테고리 초기 로드
       try {
-        const res = await fetch(API+BASE + API_CATS, { credentials: 'include' });
-        if (!res.ok) throw new Error(`status ${res.status}`);
-        ({ categories } = await res.json());
+        const res = await fetch(`${API_BASE}${API_CATS}`, { credentials: 'include' });
+        if (res.ok) {
+          const { categories } = await res.json();
+          categories.forEach(cat => {
+            const cb = document.querySelector(`input[name="categories[]"][value="${cat}"]`);
+            if (cb) cb.checked = true;
+          });
+        }
       } catch (err) {
-        console.error('카테고리 로드 실패, localStorage fallback', err);
-        categories = JSON.parse(localStorage.getItem('init_categories') || '[]');
+        console.error('카테고리 로드 실패:', err);
       }
 
-      // 4) 체크박스 상태 적용
-      categories.forEach(cat => {
-        const cb = document.querySelector(`input[name="categories[]"][value="${cat}"]`);
-        if (cb) cb.checked = true;
-      });
-
-      // 5) PUT 저장
-      document.getElementById('editForm').addEventListener('submit', async e => {
+      // 저장 처리
+      form.addEventListener('submit', async e => {
         e.preventDefault();
-        const selected = Array.from(
-          document.querySelectorAll('input[name="categories[]"]:checked')
-        ).map(cb => cb.value);
-
-        const saveRes = await fetch(API_BASE + API_CATS, {
-          method: 'PUT',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ categories: selected })
-        });
-
-        if (saveRes.ok) {
-          localStorage.setItem('init_categories', JSON.stringify(selected));
-          alert('카테고리가 저장되었습니다.');
-          window.location.href = 'index.html';
-        } else {
-          alert('저장에 실패했습니다.');
+        const selected = Array.from(form.querySelectorAll('input[name="categories[]"]:checked'))
+                              .map(cb => cb.value);
+        try {
+          const saveRes = await fetch(`${API_BASE}${API_CATS}`, {
+            method: 'PUT',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ categories: selected })
+          });
+          if (saveRes.ok) {
+            alert('카테고리가 저장되었습니다.');
+            window.location.href = 'index.html';
+          } else {
+            alert('저장에 실패했습니다.');
+          }
+        } catch (err) {
+          console.error('저장 중 오류:', err);
+          alert('저장 중 오류가 발생했습니다.');
         }
       });
     });

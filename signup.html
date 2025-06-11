@@ -34,9 +34,8 @@
     <!-- Slide-out Menu -->
     <section id="menu">
       <section>
-        <ul class="links">
-          <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
-          <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
+        <ul class="links" id="menuLinks">
+          <!-- 로그인 상태에 따라 JS로 채워짐 -->
         </ul>
       </section>
       <section>
@@ -70,6 +69,7 @@
           <div class="form-field">
             <label>내 뉴스 카테고리 선택</label>
             <div class="checkbox-group">
+              <!-- ... 기존 체크박스 항목 생략 없이 그대로 유지 ... -->
               <div class="checkbox-item">
                 <input type="checkbox" id="cat-politics" name="categories[]" value="politics">
                 <label for="cat-politics">정치</label>
@@ -129,7 +129,45 @@
 
   </div>
 
-  <!-- 회원가입 처리 스크립트 (추가된 부분만) -->
+  <!-- 로그인 상태에 따라 메뉴 업데이트 -->
+  <script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const API_BASE = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
+    const links    = document.getElementById('menuLinks');
+
+    try {
+      const profileRes = await fetch(`${API_BASE}/profile`, { credentials: 'include' });
+      links.innerHTML = '';
+
+      if (profileRes.ok) {
+        const { username } = await profileRes.json();
+
+        links.innerHTML = `
+          <li class="greeting">안녕하세요. ${username}님</li>
+          <li><a href="editinfo.html"><h3>카테고리 수정</h3><p>내 뉴스 카테고리</p></a></li>
+          <li><a href="#" id="logoutLink"><h3>Logout</h3><p>로그아웃</p></a></li>
+          <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
+        `;
+
+        document.getElementById('logoutLink').addEventListener('click', async e => {
+          e.preventDefault();
+          await fetch(`${API_BASE}/logout`, { method: 'POST', credentials: 'include' });
+          window.location.reload();
+        });
+      } else {
+        links.innerHTML = `
+          <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
+          <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
+          <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
+        `;
+      }
+    } catch (e) {
+      console.error('로그인 상태 확인 중 에러:', e);
+    }
+  });
+  </script>
+
+  <!-- 회원가입 처리 스크립트 -->
   <script>
     const API_SIGNUP = 'https://news-assistant-app-public-1052035590147.us-central1.run.app/register';
 
@@ -144,7 +182,6 @@
         document.querySelectorAll('input[name="categories[]"]:checked')
       ).map(cb => cb.value);
 
-      // 비밀번호 확인
       if (password !== password2) {
         alert('비밀번호가 일치하지 않습니다.');
         return;
@@ -172,6 +209,7 @@
     });
   </script>
 
+  <!-- 필수 스크립트 -->
   <script src="assets/js/jquery.min.js"></script>
   <script src="assets/js/browser.min.js"></script>
   <script src="assets/js/breakpoints.min.js"></script>
