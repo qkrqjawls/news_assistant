@@ -63,9 +63,7 @@
     <section id="menu">
       <section>
         <ul class="links" id="menuLinks">
-          <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
-          <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
-          <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
+          <!-- JS로 로그인 상태에 따라 채워집니다 -->
         </ul>
       </section>
     </section>
@@ -75,81 +73,62 @@
       <ul class="posts">
         <li class="dev-item">
           <div class="image">
-            <img src="images/로고1.png" alt="홍길동" />
+            <img src="images/dev1.jpg" alt="Developer 1" />
           </div>
           <div class="details">
             <h3>홍길동</h3>
-            <p>백엔드 개발 및 API 설계 담당</p>
+            <p>Front-end 개발 담당</p>
           </div>
         </li>
-        <li class="dev-item">
-          <div class="image">
-            <img src="images/로고1.png" alt="김영희" />
-          </div>
-          <div class="details">
-            <h3>김영희</h3>
-            <p>프론트엔드 및 UI/UX 디자인 담당</p>
-          </div>
-        </li>
+        <!-- 추가 개발자 항목… -->
       </ul>
-    </section>
-
-    <!-- Footer (index.html과 동일) -->
-    <section id="footer">
-      <ul class="icons">
-        <li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
-        <li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
-        <li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
-        <li><a href="#" class="icon solid fa-rss"><span class="label">RSS</span></a></li>
-        <li><a href="#" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
-      </ul>
-      <p class="copyright">&copy; Untitled. Design: <a href="http://html5up.net">HTML5 UP</a>.</p>
     </section>
 
   </div>
 
-  <!-- 필수 스크립트 (index.html과 동일) -->
+  <!-- 로그인 상태에 따라 메뉴 업데이트 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const API_BASE = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
+      const links    = document.getElementById('menuLinks');
+
+      try {
+        const profileRes = await fetch(`${API_BASE}/profile`, { credentials: 'include' });
+        links.innerHTML = '';
+
+        if (profileRes.ok) {
+          const { username } = await profileRes.json();
+
+          links.innerHTML = `
+            <li class="greeting">안녕하세요. ${username}님</li>
+            <li><a href="editinfo.html"><h3>카테고리 수정</h3><p>내 뉴스 카테고리</p></a></li>
+            <li><a href="#" id="logoutLink"><h3>Logout</h3><p>로그아웃</p></a></li>
+            <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
+          `;
+          document.getElementById('logoutLink').addEventListener('click', async e => {
+            e.preventDefault();
+            await fetch(`${API_BASE}/logout`, { method: 'POST', credentials: 'include' });
+            window.location.reload();
+          });
+        } else {
+          links.innerHTML = `
+            <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
+            <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
+            <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
+          `;
+        }
+      } catch (e) {
+        console.error('로그인 상태 확인 중 에러:', e);
+      }
+    });
+  </script>
+
+  <!-- 필수 스크립트 -->
   <script src="assets/js/jquery.min.js"></script>
   <script src="assets/js/browser.min.js"></script>
   <script src="assets/js/breakpoints.min.js"></script>
   <script src="assets/js/util.js"></script>
   <script src="assets/js/main.js"></script>
-
-  <!-- 로그인 상태에 따라 메뉴를 업데이트하는 스크립트 (index.html과 동일) -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const links = document.getElementById('menuLinks');
-      // 첫 두 항목은 동적, 세 번째는 항상 표시
-      fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/profile', {
-        credentials: 'include'
-      }).then(res => {
-        links.innerHTML = '';
-        if (res.ok) {
-          links.innerHTML += `
-            <li><a href="categories.html"><h3>Categories</h3><p>카테고리 수정</p></a></li>
-            <li><a href="#" id="logout"><h3>Log Out</h3><p>로그아웃</p></a></li>
-          `;
-          document.getElementById('logout').addEventListener('click', async e => {
-            e.preventDefault();
-            await fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/logout', {
-              method: 'POST',
-              credentials: 'include'
-            });
-            window.location.reload();
-          });
-        } else {
-          links.innerHTML += `
-            <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
-            <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
-          `;
-        }
-        // 세 번째: 개발자 페이지 (항상)
-        links.innerHTML += `
-          <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
-        `;
-      });
-    });
-  </script>
 
 </body>
 </html>
