@@ -18,7 +18,7 @@
     <header id="header">
       <h1><a href="index.html">준혁이는 뉴스 보기 귀찮아!</a></h1>
       <nav class="links">
-        <ul id="menuLinks">
+        <ul id="menuLinksHeader">
           <!-- 로그인 상태에 따라 JS로 동적 채움 -->
         </ul>
       </nav>
@@ -34,7 +34,7 @@
 
       <!-- 로그인/비로그인에 따라 JS가 채워주는 링크 -->
       <section>
-        <ul class="links" id="menuLinks">
+        <ul class="links" id="menuLinksSlide">
           <!-- JS에서 채웁니다 -->
         </ul>
       </section>
@@ -112,8 +112,8 @@
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       const API_BASE = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
-      const headerLinks = document.querySelector('header nav.links ul#menuLinks');
-      const slideLinks  = document.querySelector('section#menu ul#menuLinks');
+      const headerLinks = document.getElementById('menuLinksHeader');
+      const slideLinks  = document.getElementById('menuLinksSlide');
 
       headerLinks.innerHTML = '';
       slideLinks.innerHTML  = '';
