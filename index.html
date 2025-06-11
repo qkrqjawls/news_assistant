@@ -91,60 +91,42 @@
 
   <!-- 로그인 상태에 따라 메뉴 업데이트 (수정판) -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const links = document.getElementById('menuLinks');
-      fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/profile', {
-        credentials: 'include'
-      })
-      .then(async res => {
-        links.innerHTML = '';
-        if (res.ok) {
-          // 1) 프로필 정보(JSON) 파싱
-          const profile = await res.json();
-          // 2) 인사 문구 삽입
-          links.innerHTML += `
-            <li class="greeting">
-              <h3>안녕하세요. ${profile.id}님</h3>
-            </li>
+    document.addEventListener('DOMContentLoaded', async() => {
+      const API_BASE  = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
+      const links     = document.getElementById('menuLinks');
+      const postsList = document.getElementById('postsList');
+
+      // 1) 로그인 상태 확인 & 메뉴 렌더링
+      try {
+        const profileRes = await fetch(`${API_BASE}/profile`, {
+          credentials: 'include'
+        });
+        if (profileRes.ok) {
+          const { username } = await profileRes.json();
+          links.innerHTML = `
+            <li class="greeting">안녕하세요 ${username}님</li>
+            <li><a href="editinfo.html"><h3>카테고리 수정</h3><p>내 뉴스 카테고리</p></a></li>
+            <li><a href="#" id="logoutLink"><h3>Logout</h3><p>로그아웃</p></a></li>
+            <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
           `;
-          // 3) 기존 Categories / Log Out
-          links.innerHTML += `
-            <li><a href="editinfo.html"><h3>Categories</h3><p>카테고리 수정</p></a></li>
-            <li id="logout"><a href="#"><h3>Log Out</h3><p>로그아웃</p></a></li>
-          `;
-          document.getElementById('logout').addEventListener('click', async e => {
+          document.getElementById('logoutLink').addEventListener('click', async e => {
             e.preventDefault();
-            try {
-              const resp = await fetch(
-                'https://news-assistant-app-public-1052035590147.us-central1.run.app/logout',
-                {
-                  method: 'POST',
-                  credentials: 'include'
-                }
-              );
-              if (!resp.ok) throw new Error(resp.statusText);
-              // 로그아웃 성공 시 로그인 페이지로 이동
-              window.location.reload();
-            } catch (err) {
-              console.error('로그아웃 실패:', err);
-              alert('로그아웃 중 오류가 발생했습니다.');
-            }
+            await fetch(`${API_BASE}/logout`, {
+              method: 'POST',
+              credentials: 'include'
+            });
+            window.location.reload();
           });
         } else {
-          // 비로그인 상태: 로그인/회원가입
-          links.innerHTML += `
+          links.innerHTML = `
             <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
             <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
+            <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
           `;
         }
-        // 항상: Developer Page
-        links.innerHTML += `
-          <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
-        `;
-      })
-      .catch(err => {
-        console.error('프로필 로드 실패:', err);
-      });
+      } catch (e) {
+        console.error('로그인 상태 확인 중 에러:', e);
+      }
     });
   </script>
 
