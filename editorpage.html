@@ -14,12 +14,17 @@
     }
     .dev-item .image {
       flex: 0 0 150px;
+      width: 150px;
+      height: 150px;       /* 고정된 정사각형 영역 */
       margin-right: 1.5rem;
+      overflow: hidden;     /* 넘치는 부분 숨김 */
+      border-radius: 8px;   /* 모서리 둥글게 */
     }
     .dev-item .image img {
       width: 100%;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      height: 100%;        /* 컨테이너에 맞춰 높이도 100% */
+      object-fit: cover;    /* 비율 유지하며 꽉 채우기 */
+      display: block;
     }
     .dev-item .details {
       flex: 1;
@@ -76,17 +81,17 @@
             <img src="images/dev1.jpg" alt="Developer 1" />
           </div>
           <div class="details">
-            <h3>홍길동</h3>
+            <h3>박범진</h3>
             <p>Front-end 개발 담당</p>
           </div>
         </li>
         <li class="dev-item">
           <div class="image">
-            <img src="images/dev1.jpg" alt="Developer 1" />
+            <img src="images/dev1.jpg" alt="Developer 2" />
           </div>
           <div class="details">
-            <h3>홍길동</h3>
-            <p>Front-end 개발 담당</p>
+            <h3>최윤호</h3>
+            <p>Back-end 개발 담당</p>
           </div>
         </li>
         <!-- 추가 개발자 항목… -->
@@ -116,7 +121,14 @@
           `;
           document.getElementById('logoutLink').addEventListener('click', async e => {
             e.preventDefault();
-            await fetch(`${API_BASE}/logout`, { method: 'POST', credentials: 'include' });
+            const resp = await fetch(`${API_BASE}/logout`, {
+              method: 'POST',
+              credentials: 'include'
+            });
+            if (!resp.ok) {
+              alert('로그아웃 실패');
+              return;
+            }
             window.location.href = 'index.html';
           });
         } else {
