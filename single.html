@@ -27,16 +27,16 @@
           <li class="menu"><a class="fa-bars" href="#menu">Menu</a></li>
         </ul>
       </nav>
-    </header> <!-- :contentReference[oaicite:0]{index=0} -->
+    </header>
 
-    <!-- Menu (editorpage.html에서 복사) -->
+    <!-- Menu -->
     <section id="menu">
       <section>
         <ul class="links" id="menuLinks">
           <!-- 로그인 상태에 따라 JS로 채워짐 -->
         </ul>
       </section>
-    </section> <!-- :contentReference[oaicite:1]{index=1} -->
+    </section>
 
     <!-- Post Detail -->
     <article class="post">
@@ -92,203 +92,124 @@
   <script src="assets/js/util.js"></script>
   <script src="assets/js/main.js"></script>
 
-  <!-- 로그인 상태에 따라 메뉴 업데이트 (index.html과 동일한 로직) -->
+  <!-- 로그인 상태에 따라 메뉴 업데이트 -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const links = document.getElementById('menuLinks');
+  document.addEventListener('DOMContentLoaded', async () => {
+    const API_BASE = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
+    const links    = document.getElementById('menuLinks');
 
-      fetch('https://news-assistant-app-public-1052035590147.us-central1.run.app/profile', {
-        credentials: 'include'
-      })
-      .then(async res => {
-        links.innerHTML = '';
+    try {
+      const profileRes = await fetch(`${API_BASE}/profile`, { credentials: 'include' });
+      links.innerHTML = '';
 
-        if (res.ok) {
-          // 로그인된 경우: 프로필 정보 파싱
-          const profile = await res.json();
+      if (profileRes.ok) {
+        const { username } = await profileRes.json();
 
-          // 1) 인사 문구
-          const liGreeting = document.createElement('li');
-          liGreeting.classList.add('greeting');
-          liGreeting.innerHTML = `<h3>안녕하세요. ${profile.id}님</h3>`;
-          links.appendChild(liGreeting);
+        links.innerHTML = `
+          <li class="greeting"><h3>안녕하세요. ${username}님</h3></li>
+          <li><a href="editinfo.html"><h3>카테고리 수정</h3><p>내 뉴스 카테고리</p></a></li>
+          <li><a href="#" id="logoutLink"><h3>Log Out</h3><p>로그아웃</p></a></li>
+          <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
+        `;
 
-          // 2) Categories
-          const liCat = document.createElement('li');
-          liCat.innerHTML = `<a href="editinfo.html"><h3>Categories</h3><p>카테고리 수정</p></a>`;
-          links.appendChild(liCat);
-
-          // 3) Log Out
-          const liLogout = document.createElement('li');
-          liLogout.id = 'logout';
-          liLogout.innerHTML = `<a href="#"><h3>Log Out</h3><p>로그아웃</p></a>`;
-          links.appendChild(liLogout);
-
-          // 4) Developer Page
-          const liDev = document.createElement('li');
-          liDev.innerHTML = `<a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a>`;
-          links.appendChild(liDev);
-
-          // 로그아웃 이벤트 핸들러
-          liLogout.addEventListener('click', async e => {
-            e.preventDefault();
-            try {
-              const resp = await fetch(
-                'https://news-assistant-app-public-1052035590147.us-central1.run.app/logout',
-                { method: 'POST', credentials: 'include' }
-              );
-              if (!resp.ok) throw new Error(resp.statusText);
-              // 로그아웃 후 메뉴를 비로그인 상태로 다시 그려 줌
-              links.innerHTML = `
-                <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
-                <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
-                <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
-              `;
-            } catch (err) {
-              console.error('로그아웃 실패:', err);
-              alert('로그아웃 중 오류가 발생했습니다.');
-            }
-          });
-
-        } else {
-          // 비로그인 상태
-          links.innerHTML = `
-            <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
-            <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
-            <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
-          `;
-        }
-      })
-      .catch(err => {
-        console.error('프로필 로드 실패:', err);
-      });
-    });
+        document.getElementById('logoutLink').addEventListener('click', async e => {
+          e.preventDefault();
+          await fetch(`${API_BASE}/logout`, { method: 'POST', credentials: 'include' });
+          window.location.reload();
+        });
+      } else {
+        links.innerHTML = `
+          <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
+          <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
+          <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
+        `;
+      }
+    } catch (e) {
+      console.error('로그인 상태 확인 중 에러:', e);
+    }
+  });
   </script>
 
-
-  <!-- 이슈 상세 로딩 스크립트 (기존 single.html) -->
+  <!-- 이슈 상세 로딩 스크립트 -->
   <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      const params = new URLSearchParams(window.location.search);
-      const issueId = params.get('id');
-      if (!issueId) {
-        document.getElementById('post-title').textContent = '잘못된 요청입니다.';
-        return;
-      }
+  document.addEventListener('DOMContentLoaded', async () => {
+    const params = new URLSearchParams(window.location.search);
+    const issueId = params.get('id');
+    if (!issueId) {
+      document.getElementById('post-title').textContent = '잘못된 요청입니다.';
+      return;
+    }
 
-      const API = 'https://news-assistant-app-public-1052035590147.us-central1.run.app/api/issues?limit=100&offset=0';
+    const API = 'https://news-assistant-app-public-1052035590147.us-central1.run.app/api/issues?limit=100&offset=0';
 
-      // 제목 로딩 애니메이션
-      const titleEl = document.getElementById('post-title');
-      const titleStates = ['로딩 중.', '로딩 중..', '로딩 중...'];
-      let titleIndex = 0;
-      const titleInterval = setInterval(() => {
-        titleEl.textContent = titleStates[titleIndex % titleStates.length];
-        titleIndex++;
-      }, 500);
+    // 로딩 애니메이션 설정
+    const titleEl   = document.getElementById('post-title');
+    const dateElem  = document.getElementById('post-date');
+    const contentEl = document.getElementById('post-content');
+    const relatedListEl = document.getElementById('related-list');
 
-      // 날짜 로딩 애니메이션
-      const dateElem = document.getElementById('post-date');
-      const dateStates = ['로딩 중.', '로딩 중..', '로딩 중...'];
-      let dateIndex = 0;
-      const dateInterval = setInterval(() => {
-        dateElem.textContent = dateStates[dateIndex % dateStates.length];
-        dateIndex++;
-      }, 500);
+    const dotStates = ['로딩 중.', '로딩 중..', '로딩 중...'];
+    let ti = 0, di = 0, ci = 0, ri = 0;
+    const titleInterval = setInterval(() => { titleEl.textContent = dotStates[ti++ % 3]; }, 500);
+    const dateInterval  = setInterval(() => { dateElem.textContent = dotStates[di++ % 3]; }, 500);
+    const contentInterval = setInterval(() => { contentEl.textContent = dotStates[ci++ % 3]; }, 500);
+    const relatedInterval = setInterval(() => { relatedListEl.textContent = dotStates[ri++ % 3]; }, 500);
 
-      // 요약 콘텐츠 로딩 애니메이션
-      const contentEl = document.getElementById('post-content');
-      const dotStates = ['로딩 중.', '로딩 중..', '로딩 중...'];
-      let dotIndex = 0;
-      const dotInterval = setInterval(() => {
-        contentEl.textContent = dotStates[dotIndex % dotStates.length];
-        dotIndex++;
-      }, 500);
+    try {
+      const resp = await fetch(API);
+      if (!resp.ok) throw new Error(resp.statusText);
+      const issues = await resp.json();
+      const issue  = issues.find(i => String(i.id) === issueId);
+      if (!issue) throw new Error('Not Found');
 
-      // 연관 기사 로딩 애니메이션
-      const relatedListEl = document.getElementById('related-list');
-      const relDotStates = ['로딩 중.', '로딩 중..', '로딩 중...'];
-      let relDotIndex = 0;
-      const relInterval = setInterval(() => {
-        relatedListEl.textContent = relDotStates[relDotIndex % relDotStates.length];
-        relDotIndex++;
-      }, 500);
+      clearInterval(titleInterval);
+      clearInterval(dateInterval);
+      clearInterval(contentInterval);
 
-      try {
-        // 데이터 fetch
-        const resp = await fetch(API);
-        if (!resp.ok) throw new Error(resp.statusText);
-        const issues = await resp.json();
-        const issue = issues.find(i => String(i.id) === issueId);
-        if (!issue) throw new Error('Not Found');
+      // 제목, 날짜, 요약 표시 (KST, 10분 단위 반올림)
+      titleEl.textContent = issue.issue_name;
+      dateElem.setAttribute('datetime', issue.date);
+      const d0 = new Date(issue.date);
+      d0.setHours(d0.getHours() + 9);
+      const y0 = d0.getFullYear(), m0 = d0.getMonth()+1, da0 = d0.getDate();
+      const h0 = d0.getHours(), mi0 = Math.floor(d0.getMinutes()/10)*10;
+      dateElem.textContent = `${y0}년 ${m0}월 ${da0}일 ${h0}시 ${mi0}분 경`;
+      contentEl.textContent = issue.summary;
 
-        // 애니메이션 중지
-        clearInterval(titleInterval);
-        clearInterval(dateInterval);
-        clearInterval(dotInterval);
+      // 연관 기사 표시
+      clearInterval(relatedInterval);
+      relatedListEl.innerHTML = '';
+      const rel = issue.related_news || [];
+      if (rel.length) {
+        rel.forEach(article => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <article class="related-item">
+              <h3><a href="${article.link}" target="_blank" rel="noopener">${article.title}</a></h3>
+              <time datetime="${article.published_at}"></time>
+              <p>${article.description}</p>
+            </article>`;
+          relatedListEl.appendChild(li);
 
-        // 1) 제목 & 날짜 & 요약기사 렌더링
-        titleEl.textContent = issue.issue_name;
-
-        // ▶ UTC → KST(+9h), "Y년 M월 D일 X시 Y분 경" 적용
-        dateElem.setAttribute('datetime', issue.date);
-        const d0 = new Date(issue.date);
-        d0.setHours(d0.getHours() + 9);
-        const year0 = d0.getFullYear();
-        const month0 = d0.getMonth() + 1;
-        const day0 = d0.getDate();
-        const h0 = d0.getHours();
-        const m0 = Math.floor(d0.getMinutes() / 10) * 10;
-        dateElem.textContent = `${year0}년 ${month0}월 ${day0}일 ${h0}시 ${m0}분 경`;
-
-
-        contentEl.textContent = issue.summary;
-
-        // 2) 연관기사 fetch & 렌더
-        requestAnimationFrame(() => {
-          fetch(API)
-            .then(r => r.json())
-            .then(data => {
-              clearInterval(relInterval);
-              const rel = data.find(i => String(i.id) === issueId).related_news || [];
-              relatedListEl.innerHTML = '';
-              if (rel.length) {
-                rel.forEach(article => {
-                  const li = document.createElement('li');
-                  li.innerHTML = `
-                    <article class="related-item">
-                      <h3>
-                        <a href="${article.link}" target="_blank" rel="noopener">
-                          ${article.title}
-                        </a>
-                      </h3>
-                      <time datetime="${article.published_at}">
-                        ${new Date(article.published_at).toLocaleDateString()}
-                      </time>
-                      <p>${article.description}</p>
-                    </article>`;
-                  relatedListEl.appendChild(li);
-                });
-              } else {
-                relatedListEl.innerHTML = '<li>연관 기사가 없습니다.</li>';
-              }
-            })
-            .catch(() => {
-              clearInterval(relInterval);
-              relatedListEl.innerHTML = '<li>연관 기사 로드 실패</li>';
-            });
+          const d1 = new Date(article.published_at);
+          d1.setHours(d1.getHours() + 9);
+          const y1 = d1.getFullYear(), m1 = d1.getMonth()+1, da1 = d1.getDate();
+          const h1 = d1.getHours(), mi1 = Math.floor(d1.getMinutes()/10)*10;
+          li.querySelector('time').textContent = `${y1}년 ${m1}월 ${da1}일 ${h1}시 ${mi1}분 경`;
         });
-
-      } catch (e) {
-        clearInterval(titleInterval);
-        clearInterval(dateInterval);
-        clearInterval(dotInterval);
-        clearInterval(relInterval);
-        console.error(e);
-        titleEl.textContent = '상세 뉴스를 불러오는 중 오류가 발생했습니다.';
-        contentEl.textContent = e.message;
+      } else {
+        relatedListEl.innerHTML = '<li>연관 기사가 없습니다.</li>';
       }
-    });
+    } catch (e) {
+      clearInterval(titleInterval);
+      clearInterval(dateInterval);
+      clearInterval(contentInterval);
+      clearInterval(relatedInterval);
+      console.error(e);
+      titleEl.textContent = '상세 뉴스를 불러오는 중 오류가 발생했습니다.';
+      contentEl.textContent = e.message;
+    }
+  });
   </script>
 
 </body>
