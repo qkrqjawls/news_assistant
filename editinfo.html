@@ -18,8 +18,8 @@
     <header id="header">
       <h1><a href="index.html">준혁이는 뉴스 보기 귀찮아!</a></h1>
       <nav class="links">
-        <ul id="menuLinks">
-          <!-- 로그인 상태에 따라 JS로 동적 채움 -->
+        <ul id="menuLinksHeader">
+          <!-- 로그인 상태에 따라 JS로 채웁니다 -->
         </ul>
       </nav>
       <nav class="main">
@@ -31,14 +31,11 @@
 
     <!-- Slide-out Menu -->
     <section id="menu">
-
-      <!-- 로그인/비로그인에 따라 JS가 채워주는 링크 -->
       <section>
-        <ul class="links" id="menuLinks">
-          <!-- JS에서 채웁니다 -->
+        <ul class="links" id="menuLinksSlide">
+          <!-- 로그인 상태에 따라 JS로 채웁니다 -->
         </ul>
       </section>
-
     </section>
 
     <!-- Main Content -->
@@ -108,97 +105,103 @@
 
   </div>
 
-  <!-- 로그인 상태에 따라 메뉴 업데이트 -->
+  <!-- 1) 로그인 체크 & 메뉴 렌더링 -->
   <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      const API_BASE = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
-      const headerLinks = document.querySelector('header nav.links ul#menuLinks');
-      const slideLinks  = document.querySelector('section#menu ul#menuLinks');
+  document.addEventListener('DOMContentLoaded', async () => {
+    const API_BASE     = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
+    const headerLinks  = document.getElementById('menuLinksHeader');
+    const slideLinks   = document.getElementById('menuLinksSlide');
 
-      headerLinks.innerHTML = '';
-      slideLinks.innerHTML  = '';
+    // 로그인 체크
+    let profileRes;
+    try {
+      profileRes = await fetch(`${API_BASE}/profile`, { credentials: 'include' });
+    } catch (e) {
+      return window.location.href = 'login.html';
+    }
+    if (!profileRes.ok) {
+      return window.location.href = 'login.html';
+    }
+    const { username } = await profileRes.json();
 
-      try {
-        const profileRes = await fetch(`${API_BASE}/profile`, { credentials: 'include' });
-        if (profileRes.ok) {
-          const { username } = await profileRes.json();
-          const items = `
-            <li class="greeting">안녕하세요. ${username}님</li>
-            <li><a href="editinfo.html"><h3>카테고리 수정</h3><p>내 뉴스 카테고리</p></a></li>
-            <li><a href="#" id="logoutLink"><h3>Logout</h3><p>로그아웃</p></a></li>
-            <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
-          `;
-          headerLinks.innerHTML = items;
-          slideLinks.innerHTML  = items;
+    // 메뉴 렌더링
+    const items = `
+      <li class="greeting">안녕하세요. ${username}님</li>
+      <li><a href="editinfo.html"><h3>카테고리 수정</h3><p>내 뉴스 카테고리</p></a></li>
+      <li><a href="#" id="logoutLink"><h3>Logout</h3><p>로그아웃</p></a></li>
+      <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
+    `;
+    headerLinks.innerHTML = items;
+    slideLinks.innerHTML  = items;
 
-          document.getElementById('logoutLink').addEventListener('click', async e => {
-            e.preventDefault();
-            await fetch(`${API_BASE}/logout`, { method: 'POST', credentials: 'include' });
-            window.location.reload();
-          });
-        } else {
-          const items = `
-            <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
-            <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
-            <li><a href="editorpage.html"><h3>Developer Page</h3><p>개발자 페이지</p></a></li>
-          `;
-          headerLinks.innerHTML = items;
-          slideLinks.innerHTML  = items;
-        }
-      } catch (e) {
-        console.error('로그인 상태 확인 중 에러:', e);
-      }
+    document.getElementById('logoutLink').addEventListener('click', async e => {
+      e.preventDefault();
+      await fetch(`${API_BASE}/logout`, { method: 'POST', credentials: 'include' });
+      window.location.href = 'login.html';
     });
-  </script> <!-- :contentReference[oaicite:0]{index=0} -->
-
-  <!-- 메뉴 토글 및 폼 처리 스크립트 -->
-  <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      const API_BASE = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
-      const API_CATS = '/api/user/categories';
-      const form = document.getElementById('editForm');
-
-      // 카테고리 초기 로드
-      try {
-        const res = await fetch(`${API_BASE}${API_CATS}`, { credentials: 'include' });
-        if (res.ok) {
-          const { categories } = await res.json();
-          categories.forEach(cat => {
-            const cb = document.querySelector(`input[name="categories[]"][value="${cat}"]`);
-            if (cb) cb.checked = true;
-          });
-        }
-      } catch (err) {
-        console.error('카테고리 로드 실패:', err);
-      }
-
-      // 저장 처리
-      form.addEventListener('submit', async e => {
-        e.preventDefault();
-        const selected = Array.from(form.querySelectorAll('input[name="categories[]"]:checked'))
-                              .map(cb => cb.value);
-        try {
-          const saveRes = await fetch(`${API_BASE}${API_CATS}`, {
-            method: 'PUT',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ categories: selected })
-          });
-          if (saveRes.ok) {
-            alert('카테고리가 저장되었습니다.');
-            window.location.href = 'index.html';
-          } else {
-            alert('저장에 실패했습니다.');
-          }
-        } catch (err) {
-          console.error('저장 중 오류:', err);
-          alert('저장 중 오류가 발생했습니다.');
-        }
-      });
-    });
+  });
   </script>
 
-  <!-- 필수 스크립트 -->
+  <!-- 2) 카테고리 로드 & 저장 -->
+  <script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const API_BASE = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
+    const API_CATS = '/api/user/categories';
+    const form     = document.getElementById('editForm');
+
+    // 초기 로드
+    try {
+      const res = await fetch(`${API_BASE}${API_CATS}`, { credentials: 'include' });
+      if (res.status === 401) {
+        return window.location.href = 'login.html';
+      }
+      if (!res.ok) {
+        alert('카테고리 정보를 가져오는 중 오류가 발생했습니다.');
+        return window.location.href = 'index.html';
+      }
+      const { categories } = await res.json();
+      categories.forEach(cat => {
+        const cb = document.querySelector(`input[name="categories[]"][value="${cat}"]`);
+        if (cb) cb.checked = true;
+      });
+    } catch (err) {
+      console.error('카테고리 로드 실패:', err);
+      return window.location.href = 'login.html';
+    }
+
+    // 저장 처리
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const selected = Array.from(
+        form.querySelectorAll('input[name="categories[]"]:checked')
+      ).map(cb => cb.value);
+
+      try {
+        const saveRes = await fetch(`${API_BASE}${API_CATS}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ categories: selected })
+        });
+        if (saveRes.status === 401) {
+          return window.location.href = 'login.html';
+        }
+        if (!saveRes.ok) {
+          alert('카테고리 저장에 실패했습니다.');
+          return;
+        }
+        alert('카테고리가 저장되었습니다.');
+        window.location.href = 'index.html';
+      } catch (err) {
+        console.error('저장 중 오류:', err);
+        alert('네트워크 오류가 발생했습니다.');
+        window.location.href = 'index.html';
+      }
+    });
+  });
+  </script>
+
+  <!-- 필수 외부 스크립트 -->
   <script src="assets/js/jquery.min.js"></script>
   <script src="assets/js/browser.min.js"></script>
   <script src="assets/js/breakpoints.min.js"></script>
