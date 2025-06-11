@@ -66,51 +66,51 @@
             <div class="checkbox-group">
               <!-- ... 기존 체크박스 항목 생략 없이 그대로 유지 ... -->
               <div class="checkbox-item">
-                <input type="checkbox" id="cat-politics" name="category_vec[]" value="politics">
+                <input type="checkbox" id="cat-politics" name="categories[]" value="politics">
                 <label for="cat-politics">정치</label>
               </div>
               <div class="checkbox-item">
-                <input type="checkbox" id="cat-business" name="category_vec[]" value="business">
+                <input type="checkbox" id="cat-business" name="categories[]" value="business">
                 <label for="cat-business">비즈니스</label>
               </div>
               <div class="checkbox-item">
-                <input type="checkbox" id="cat-entertainment" name="category_vec[]" value="entertainment">
+                <input type="checkbox" id="cat-entertainment" name="categories[]" value="entertainment">
                 <label for="cat-entertainment">연예/오락</label>
               </div>
               <div class="checkbox-item">
-                <input type="checkbox" id="cat-environment" name="category_vec[]" value="environment">
+                <input type="checkbox" id="cat-environment" name="categories[]" value="environment">
                 <label for="cat-environment">환경</label>
               </div>
               <div class="checkbox-item">
-                <input type="checkbox" id="cat-food" name="category_vec[]" value="food">
+                <input type="checkbox" id="cat-food" name="categories[]" value="food">
                 <label for="cat-food">음식/요리</label>
               </div>
               <div class="checkbox-item">
-                <input type="checkbox" id="cat-health" name="category_vec[]" value="health">
+                <input type="checkbox" id="cat-health" name="categories[]" value="health">
                 <label for="cat-health">건강</label>
               </div>
               <div class="checkbox-item">
-                <input type="checkbox" id="cat-science" name="category_vec[]" value="science">
+                <input type="checkbox" id="cat-science" name="categories[]" value="science">
                 <label for="cat-science">과학</label>
               </div>
               <div class="checkbox-item">
-                <input type="checkbox" id="cat-sports" name="category_vec[]" value="sports">
+                <input type="checkbox" id="cat-sports" name="categories[]" value="sports">
                 <label for="cat-sports">스포츠</label>
               </div>
               <div class="checkbox-item">
-                <input type="checkbox" id="cat-technology" name="category_vec[]" value="technology">
+                <input type="checkbox" id="cat-technology" name="categories[]" value="technology">
                 <label for="cat-technology">기술</label>
               </div>
               <div class="checkbox-item">
-                <input type="checkbox" id="cat-top" name="category_vec[]" value="top">
+                <input type="checkbox" id="cat-top" name="categories[]" value="top">
                 <label for="cat-top">주요 뉴스</label>
               </div>
               <div class="checkbox-item">
-                <input type="checkbox" id="cat-world" name="category_vec[]" value="world">
+                <input type="checkbox" id="cat-world" name="categories[]" value="world">
                 <label for="cat-world">세계</label>
               </div>
               <div class="checkbox-item">
-                <input type="checkbox" id="cat-tourism" name="category_vec[]" value="tourism">
+                <input type="checkbox" id="cat-tourism" name="categories[]" value="tourism">
                 <label for="cat-tourism">여행</label>
               </div>
             </div>
@@ -173,8 +173,8 @@
       const email      = document.getElementById('email').value.trim();
       const password   = document.getElementById('password').value;
       const password2  = document.getElementById('password2').value;
-      const category_vec = Array.from(
-        document.querySelectorAll('input[name="category_vec[]"]:checked')
+      const categories = Array.from(
+        document.querySelectorAll('input[name="categories[]"]:checked')
       ).map(cb => cb.value);
 
       if (password !== password2) {
@@ -186,7 +186,7 @@
         const res = await fetch(API_SIGNUP, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, email, password, category_vec })
+          body: JSON.stringify({ username, email, password, categories })
         });
         const data = await res.json();
 
