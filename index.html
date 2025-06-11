@@ -166,9 +166,7 @@
                 <header>
                   <h3><a class="issue-${issue.id}" href="single.html?id=${issue.id}">${issue.issue_name}</a></h3>
                   <p class="related-count">연관 기사: ${issue.related_news.length}개</p>
-                  <time class="published" datetime="${issue.date}">
-                    ${new Date(issue.date).toLocaleString()}
-                  </time>
+                  <time class="published" datetime="${issue.date}"></time>
                 </header>
                 <a class="issue-${issue.id} image" href="single.html?id=${issue.id}">
                   <img
@@ -182,6 +180,13 @@
               </article>
             `;
             postsList.appendChild(li);
+            // ▶ 시간 표시 : UTC → KST(+9h), 분 단위는 10분 단위로 내림, "X시 Y분 경"
+            const timeEl = li.querySelector('time.published');
+            const d = new Date(issue.date);
+            d.setHours(d.getHours() + 9);  // 9시간 보정
+            const h = d.getHours();
+            const m = Math.floor(d.getMinutes() / 10) * 10;
+            timeEl.textContent = `${h}시 ${m}분 경`;
 
             // 이미지 로테이션
             const images = (issue.related_news || [])
