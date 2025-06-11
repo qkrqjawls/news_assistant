@@ -180,13 +180,17 @@
               </article>
             `;
             postsList.appendChild(li);
-            // ▶ 시간 표시 : UTC → KST(+9h), 분 단위는 10분 단위로 내림, "X시 Y분 경"
+            // ▶ 시간 표시 : UTC → KST(+9h), 10분 단위 내림, "Y년 M월 D일 X시 Y분 경"
             const timeEl = li.querySelector('time.published');
             const d = new Date(issue.date);
-            d.setHours(d.getHours() + 9);  // 9시간 보정
+            d.setHours(d.getHours() + 9);
+            const year = d.getFullYear();
+            const month = d.getMonth() + 1;
+            const day = d.getDate();
             const h = d.getHours();
             const m = Math.floor(d.getMinutes() / 10) * 10;
-            timeEl.textContent = `${h}시 ${m}분 경`;
+            timeEl.textContent = `${year}년 ${month}월 ${day}일 ${h}시 ${m}분 경`;
+
 
             // 이미지 로테이션
             const images = (issue.related_news || [])

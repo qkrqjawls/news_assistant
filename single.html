@@ -190,13 +190,17 @@
         // 1) 제목 & 날짜 & 요약기사 렌더링
         titleEl.textContent = issue.issue_name;
 
-        // ▶ UTC → KST(+9h), 10분 단위 분 내림, "X시 Y분 경" 적용
+        // ▶ UTC → KST(+9h), "Y년 M월 D일 X시 Y분 경" 적용
         dateElem.setAttribute('datetime', issue.date);
         const d0 = new Date(issue.date);
         d0.setHours(d0.getHours() + 9);
+        const year0 = d0.getFullYear();
+        const month0 = d0.getMonth() + 1;
+        const day0 = d0.getDate();
         const h0 = d0.getHours();
         const m0 = Math.floor(d0.getMinutes() / 10) * 10;
-        dateElem.textContent = `${h0}시 ${m0}분 경`;
+        dateElem.textContent = `${year0}년 ${month0}월 ${day0}일 ${h0}시 ${m0}분 경`;
+
 
         contentEl.textContent = issue.summary;
 
