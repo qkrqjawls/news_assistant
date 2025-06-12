@@ -102,7 +102,7 @@
     });
   </script>
 
-  <!-- 중복검사 · 이미지 로테이션 · 초기 로드 · 무한 스크롤 (점수+날짜 기준 정렬) -->
+  <!-- 중복검사 · 이미지 로테이션 · 초기 로드 · 무한 스크롤 (추천점수+날짜 기준 정렬) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const API_BASE  = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
@@ -117,39 +117,21 @@
         if (loading || finished) return;
         loading = true;
         try {
-          // 1) 사용자 추천 점수 불러오기
-          const recRes = await fetch(
-            `${API_BASE}/api/user_recommendations`,
-            { credentials: 'include' }
-          );
-          const recs = recRes.ok ? await recRes.json() : [];
-          const scoreMap = recs.reduce((m, r) => {
-            m[r.issue_id] = r.score;
-            return m;
-          }, {});
-
-          // 2) 이슈 목록 불러오기
+          // 추천점수 순으로 정렬된 이슈 한 번에 불러오기
           const resp = await fetch(
-            `${API_BASE}/api/issues?limit=${limit}&offset=${offset}`,
+            `${API_BASE}/api/issues/recommended?limit=${limit}&offset=${offset}`,
             { credentials: 'include' }
           );
           if (!resp.ok) throw new Error(resp.statusText);
+
+          // JSON 파싱
           let issues = await resp.json();
           if (issues.length === 0) {
             finished = true;
             return;
           }
 
-          // 3) score 병합 & 4) score 내림차순, 동점이면 date 내림차순
-          issues = issues
-            .map(issue => ({ ...issue, score: scoreMap[issue.id] || 0 }))
-            .sort((a, b) => {
-              const diff = b.score - a.score;
-              if (diff !== 0) return diff;
-              return new Date(b.date) - new Date(a.date);
-            });
-
-          // 5) 렌더링
+          // 렌더링
           issues.forEach(issue => {
             if (postsList.querySelector(`li[data-issue-id="${issue.id}"]`)) return;
 
