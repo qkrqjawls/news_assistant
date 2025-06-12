@@ -117,16 +117,35 @@
         if (loading || finished) return;
         loading = true;
         try {
+          // 1) 사용자 추천 점수 불러오기
+          const recRes = await fetch(
+            `${API_BASE}/api/user_recommendations`,
+            { credentials: 'include' }
+          );
+          const recs = recRes.ok ? await recRes.json() : [];
+          const scoreMap = recs.reduce((m, r) => {
+            m[r.issue_id] = r.score;
+            return m;
+          }, {});
+
+          // 2) 이슈 목록 불러오기
           const resp = await fetch(
             `${API_BASE}/api/issues?limit=${limit}&offset=${offset}`,
             { credentials: 'include' }
           );
           if (!resp.ok) throw new Error(resp.statusText);
-          const issues = await resp.json();
+          let issues = await resp.json();
           if (issues.length === 0) {
             finished = true;
             return;
           }
+
+          // 3) score 필드 병합 & 4) 내림차순 정렬
+          issues = issues
+            .map(issue => ({ ...issue, score: scoreMap[issue.id] || 0 }))
+            .sort((a, b) => b.score - a.score);
+
+          // 5) 렌더링 (기존 로직 그대로)
           issues.forEach(issue => {
             if (postsList.querySelector(`li[data-issue-id="${issue.id}"]`)) return;
 
@@ -186,6 +205,7 @@
               });
             });
           });
+
           offset += limit;
         } catch (e) {
           console.error('이슈 로드 중 에러:', e);
