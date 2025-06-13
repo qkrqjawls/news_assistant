@@ -69,9 +69,7 @@
       const postsList = document.getElementById('postsList');
 
       try {
-        const profileRes = await fetch(`${API_BASE}/profile`, {
-          credentials: 'include'
-        });
+        const profileRes = await fetch(`${API_BASE}/profile`, { credentials: 'include' });
         if (profileRes.ok) {
           const { username } = await profileRes.json();
           links.innerHTML = `
@@ -82,14 +80,10 @@
           `;
           document.getElementById('logoutLink').addEventListener('click', async e => {
             e.preventDefault();
-            await fetch(`${API_BASE}/logout`, {
-              method: 'POST',
-              credentials: 'include'
-            });
+            await fetch(`${API_BASE}/logout`, { method: 'POST', credentials: 'include' });
             window.location.reload();
           });
         } else {
-          alert('현재 로그아웃 상태입니다!');
           links.innerHTML = `
             <li><a href="login.html"><h3>Log In</h3><p>로그인 하기</p></a></li>
             <li><a href="signup.html"><h3>Sign Up</h3><p>회원가입 하기</p></a></li>
@@ -102,7 +96,7 @@
     });
   </script>
 
-  <!-- 중복검사 · 이미지 로테이션 · 초기 로드 · 무한 스크롤 (추천점수+날짜 기준 정렬) -->
+  <!-- 중복검사 · 이미지 로테이션 · 초기 로드 · 무한 스크롤 (로그인별 분기) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const API_BASE  = 'https://news-assistant-app-public-1052035590147.us-central1.run.app';
@@ -112,29 +106,34 @@
       let offset = 0;
       let loading = false;
       let finished = false;
+      let isLoggedIn = false;
+
+      // 로그인 여부 확인
+      (async () => {
+        try {
+          const res = await fetch(`${API_BASE}/profile`, { credentials: 'include' });
+          isLoggedIn = res.ok;
+        } catch {
+          isLoggedIn = false;
+        }
+      })();
 
       async function loadIssues() {
         if (loading || finished) return;
         loading = true;
         try {
-          // 추천점수 순으로 정렬된 이슈 한 번에 불러오기
-          const resp = await fetch(
-            `${API_BASE}/api/issues/recommended?limit=${limit}&offset=${offset}`,
-            { credentials: 'include' }
-          );
+          const endpoint = isLoggedIn
+            ? `${API_BASE}/api/issues/recommended?limit=${limit}&offset=${offset}`
+            : `${API_BASE}/api/issues?limit=${limit}&offset=${offset}`;
+
+          const resp = await fetch(endpoint, isLoggedIn ? { credentials: 'include' } : {});
           if (!resp.ok) throw new Error(resp.statusText);
 
-          // JSON 파싱
-          let issues = await resp.json();
-          if (issues.length === 0) {
-            finished = true;
-            return;
-          }
+          const issues = await resp.json();
+          if (issues.length === 0) { finished = true; return; }
 
-          // 렌더링
           issues.forEach(issue => {
             if (postsList.querySelector(`li[data-issue-id="${issue.id}"]`)) return;
-
             const li = document.createElement('li');
             li.setAttribute('data-issue-id', issue.id);
             li.innerHTML = `
@@ -145,13 +144,7 @@
                   <time class="published" datetime="${issue.date}"></time>
                 </header>
                 <a class="issue-${issue.id} image" href="single.html?id=${issue.id}">
-                  <img
-                    class="rotator"
-                    src="images/noimage.jpg"
-                    onerror="this.src='images/noimage.jpg'"
-                    alt="관련 기사 이미지"
-                    width="200" height="150"
-                  />
+                  <img class="rotator" src="images/noimage.jpg" onerror="this.src='images/noimage.jpg'" width="200" height="150" />
                 </a>
               </article>
             `;
@@ -160,34 +153,26 @@
             const timeEl = li.querySelector('time.published');
             const d = new Date(issue.date);
             d.setHours(d.getHours() + 9);
-            const year = d.getFullYear();
-            const month = d.getMonth() + 1;
-            const day = d.getDate();
-            const h = d.getHours();
-            const m = Math.floor(d.getMinutes() / 10) * 10;
-            timeEl.textContent = `${year}년 ${month}월 ${day}일 ${h}시 ${m}분 경`;
+            const Y = d.getFullYear(), M = d.getMonth()+1, D = d.getDate();
+            const h = d.getHours(), m = Math.floor(d.getMinutes()/10)*10;
+            timeEl.textContent = `${Y}년 ${M}월 ${D}일 ${h}시 ${m}분 경`;
 
-            const images = (issue.related_news || []).map(n => n.image_url).filter(u => u);
+            const images = (issue.related_news||[]).map(n=>n.image_url).filter(u=>u);
             if (images.length) {
-              let idx = 0;
-              const imgEl = li.querySelector('img.rotator');
+              let idx = 0, imgEl = li.querySelector('img.rotator');
               imgEl.src = images[0];
               imgEl.onerror = () => imgEl.src = 'images/noimage.jpg';
-              setInterval(() => {
-                idx = (idx + 1) % images.length;
-                imgEl.src = images[idx];
-              }, 5000);
+              setInterval(() => { idx = (idx+1)%images.length; imgEl.src = images[idx]; }, 5000);
             }
 
             li.querySelectorAll(`.issue-${issue.id}`).forEach(x => {
               x.addEventListener('click', async () => {
-                const resp = await fetch(`${API_BASE}/click-event`, {
+                await fetch(`${API_BASE}/click-event`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ issue_id: issue.id }),
                   credentials: 'include'
                 });
-                if (!resp.ok) throw new Error(resp.statusText);
               });
             });
           });
@@ -202,9 +187,7 @@
 
       loadIssues();
       window.addEventListener('scroll', () => {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
-          loadIssues();
-        }
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) loadIssues();
       });
     });
   </script>
