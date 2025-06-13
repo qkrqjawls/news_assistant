@@ -110,7 +110,7 @@
   });
   </script>
 
-  <!-- 이슈 상세 로딩 스크립트 -->
+  <!-- 이슈 상세 로딩 스크립트 (단일 조회 방식) -->
   <script>
   document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
@@ -120,27 +120,25 @@
       return;
     }
 
-    const API = 'https://news-assistant-app-public-1052035590147.us-central1.run.app/api/issues?limit=100&offset=0';
+    // 단일 이슈 요청
+    const API = `https://news-assistant-app-public-1052035590147.us-central1.run.app/api/issues/${issueId}`;
 
-    // 로딩 애니메이션 설정
-    const titleEl   = document.getElementById('post-title');
-    const dateElem  = document.getElementById('post-date');
-    const contentEl = document.getElementById('post-content');
+    // 로딩 애니메이션
+    const titleEl       = document.getElementById('post-title');
+    const dateElem      = document.getElementById('post-date');
+    const contentEl     = document.getElementById('post-content');
     const relatedListEl = document.getElementById('related-list');
-
-    const dotStates = ['로딩 중.', '로딩 중..', '로딩 중...'];
+    const dotStates     = ['로딩 중.', '로딩 중..', '로딩 중...'];
     let ti = 0, di = 0, ci = 0, ri = 0;
-    const titleInterval = setInterval(() => { titleEl.textContent = dotStates[ti++ % 3]; }, 500);
-    const dateInterval  = setInterval(() => { dateElem.textContent = dotStates[di++ % 3]; }, 500);
+    const titleInterval   = setInterval(() => { titleEl.textContent   = dotStates[ti++ % 3]; }, 500);
+    const dateInterval    = setInterval(() => { dateElem.textContent  = dotStates[di++ % 3]; }, 500);
     const contentInterval = setInterval(() => { contentEl.textContent = dotStates[ci++ % 3]; }, 500);
     const relatedInterval = setInterval(() => { relatedListEl.textContent = dotStates[ri++ % 3]; }, 500);
 
     try {
-      const resp = await fetch(API);
+      const resp = await fetch(API, { credentials: 'include' });
       if (!resp.ok) throw new Error(resp.statusText);
-      const issues = await resp.json();
-      const issue  = issues.find(i => String(i.id) === issueId);
-      if (!issue) throw new Error('Not Found');
+      const issue = await resp.json();
 
       clearInterval(titleInterval);
       clearInterval(dateInterval);
